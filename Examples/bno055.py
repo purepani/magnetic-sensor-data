@@ -55,7 +55,7 @@ while True:
     #print("Gravity (m/s^2): {}".format(sensor.gravity))
     #print(type(sensor.gravity))
     #time.sleep(1)
-    file_name= input("Give new name for file:")
+    file_name= input("Give new name for file:") + ".data"
     row_data=[]
     for i in range(samples_per_measurement):
         row=sensor.acceleration + sensor.magnetic + sensor.gyro + sensor.euler + sensor.quaternion+sensor.linear_acceleration+sensor.gravity

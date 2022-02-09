@@ -1,16 +1,21 @@
-import TLV
+import adafruit_bno055
+#import TLV
+import board
+import busio
 
 from time import sleep
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation as animation
 
-tlv493d = TLV.TLV493D()
+i2c = busio.I2C(board.SCL, board.SDA)
+tlv493d = adafruit_bno055.BNO055_I2C(i2c)
+#tlv493d = TLV.TLV493D()
 
 fig=plt.figure()
 ax=plt.axes(projection="3d")
 
-lim=100
+lim=3000
 ax.set_xlim3d([-lim,lim])
 ax.set_ylim3d([-lim,lim])
 ax.set_zlim3d([-lim,lim])
@@ -26,10 +31,7 @@ lines = [ax.plot(line[0], line[1], line[2], "--", color="orange")[0] for line in
 
 
 def animate(i):
-    tlv493d.update_data()
-    x = tlv493d.get_x()
-    y = tlv493d.get_y()
-    z = tlv493d.get_z()
+    x, y, z = tlv493d.magnetic
     point = [[x],[y],[z]]
     print(point)
     scat._offsets3d = point 
@@ -40,7 +42,7 @@ def animate(i):
 
 if __name__=="__main__":
     
-    ani = animation.FuncAnimation(fig, animate)
+    ani = animation.FuncAnimation(fig, animate, interval=50)
     plt.show()
 #while True:
 #    tlv493d.update_data()
