@@ -25,10 +25,11 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ 
               python3
-              python3Packages.scikitimage
               python3Packages.scipy
-              python3Packages.sympy
+              python3Packages.pandas
+              python3Packages.matplotlib
               python3Packages.numpy
+              printrun
               #python39Packages.jedi-language-server
               pkgs.nodePackages.pyright
               pkgs.mypy
