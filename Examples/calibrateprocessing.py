@@ -1,57 +1,139 @@
+from genericpath import exists
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import pylab as plt
+import seaborn as sns
+from matplotlib.colors import LogNorm
+from mpl_toolkits.mplot3d import axes3d
+import os
 
-
-
-folder = '0.5mm'
-
-step = 0.5 
-limx = [0,12.5]
-limy = [0,3]
-numx = int(np.round(limx[1]/step) )+1
-numy = int(np.round(limy[1]/step))+1
-
-print(f"({numx}, {numy})")
-
-xx = np.linspace(limx[0],limx[1], numx)
-yy = np.linspace(limy[0],limy[1], numy) 
-
-print(xx)
-zz = np.array([12.5])
-
-shape = [xx.shape[0], yy.shape[0], zz.shape[0], 3]
-
-def get_avgs(xx, yy, zz, i, j, k, M):
-    x, y, z = xx[i], yy[j], zz[k] 
-    data = pd.read_csv(f"{folder}/{x}-{y}-{z}.data")
+def get_stats(data):
     mag = data.loc[:,'Magnetometerx':'Magnetometerz'].set_axis(['Mx','My','Mz'],axis=1)
-    mag_avg = mag.mean()
-    return mag_avg[M]
+    mag_avg = mag.mean() 
+    mag_std = mag.std()
+    return mag_avg, mag_std
 
-data = np.zeros(shape)
 
-for i in range(shape[0]):
-    for j in range(shape[1]):
-        for k in range(shape[2]):
-            for m in range(shape[3]):
-                data[i, j, k, m] = get_avgs(xx, yy, zz, i, j, k, m)
+folder = input("Enter folder with data: ").strip()
+files = os.listdir(folder)
+files.remove("info.txt")
+file_name = "DataAvg.txt"
+print(f"There are {len(files)} files to parse.")
 
-print(data.shape)
-z =  int(input("z: ") or "0")
 
-fig, axs = plt.subplots(2, 3)
+data_dict = {"x": [], "y":[] ,"z": [], "Mx":[], "My":[], "Mz":[], "Mx_std": [], "My_std":[], "Mz_std":[]}
+
 magnetic_labels = ["Mx", "My", "Mz"]
-position_labels = ["x", "y"]
+position_labels = ["x", "y", "z"]
+def read_data(folder, files, position_labels, name = "DataAvg.txt"):
+    i = 0
+    for file in files:
+        #print(f"{folder}/{file}")
+        try:
+            data = pd.read_csv(f"{folder}/{file}")
+        except:
+            print(f"{folder}/{file} failed to read.") 
+            continue
+        file = file.removesuffix(".data")
+        coord_str = file.split("_")
+        coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
 
-pos = [xx, yy]
+        avg, std = get_stats(data)
+        #print(avg, std)
+        for pos in position_labels:
+            data_dict[pos].append(coord[pos])
+            data_dict[f"M{pos}"].append(avg[f"M{pos}"])
+            data_dict[f"M{pos}_std"].append(std[f"M{pos}"])
+        i = i + 1
+        if i%100 == 0:
+            print(i)
+        del data
+
+    df = pd.DataFrame(data_dict)
+    df.to_csv(f"{folder}/{name}")
+    return df
+
+if os.path.exists(f"{folder}/{file_name}"): 
+    df = pd.read_csv(f"{folder}/{file_name}") 
+else:
+    df = read_data(folder, files, position_labels, file_name)
+
+print(df)
 
 
-for i in range(2):
+
+print(f"The valid values of the axes are: {position_labels}")
+axis = input("Enter axis: ")
+while(not axis in position_labels):
+    print(f"Value not valid. The valid values of the axes are: {position_labels}")
+    axis = input("Enter axis: ")
+
+axis_unique = df[axis].unique()
+axis_unique.sort()
+
+
+print(f"The valid values of {axis} are:{axis_unique}")
+axis_val = float(input(f"Enter {axis}: "))
+
+while(not axis_val in axis_unique):
+    print(f"Value not valid. The valid values of {axis} are:{axis_unique}")
+    axis_val = float(input(f"Enter {axis}: "))
+
+df_z = df[df[axis]==axis_val]
+df_z.sort_values(by= ['z', 'y', 'x']) 
+
+
+
+
+fig, axs = plt.subplots(1, 3)
+new_labels = position_labels.copy()
+new_labels.remove(axis)
+
+for i in range(1):
     for j in range(3):
-        data_xx_yy = [data[:,:,z, j], data[:, :, z, j].T]
-        axs[i, j].plot(pos[i], data_xx_yy[i])
-        axs[i, j].set(xlabel=position_labels[i])
-        axs[i, j].set_title(magnetic_labels[j])
-        axs[i, j].legend(labels=pos[i])
+        ax = axs[j]
+        M = magnetic_labels[j]
+        pos = position_labels[j]
+        plane_data = df_z.pivot(columns=new_labels[0], index = new_labels[1], values = M).sort_index(axis=0).sort_index(axis=1)
+        sns.heatmap(plane_data, ax=ax)
+        ax.set_xlabel(new_labels[0])
+        ax.set_ylabel(new_labels[1])
+        ax.set_title(M)
+plt.show()
+
+step = int(input("Enter step for vector field: "))
+
+x, y = df_z.iloc[::step]["x"], df_z.iloc[::step]['y'], 
+Mx, My, Mz = df_z.iloc[::step]["Mx"], df_z.iloc[::step]['My'], df_z.iloc[::step]['Mz']
+Mnorm = np.sqrt(Mx**2+My**2 + Mz**2)
+Mxdir, Mydir = Mx/Mnorm, My/Mnorm 
+Mlog = np.log10(Mnorm-Mnorm.min()+1)
+Mxlog, Mylog = Mxdir*Mlog, Mydir*Mlog
+
+colormap='jet'
+#plt.quiver(x, y, Mxlog, Mylog, Mnorm, cmap=colormap, norm = LogNorm(vmin = Mnorm.min(), vmax = Mnorm.max()))
+#looks cool
+#plt.quiver(x, y, Mxlog, Mylog, Mnorm, cmap=colormap, scale=50)
+
+plt.quiver(x, y, Mxlog, Mylog, Mz, cmap=colormap, scale=100)
+plt.colorbar()
+plt.ylabel("y")
+plt.xlabel("x")
+plt.show()
+
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+
+
+step = int(input("Enter step for vector field: "))
+
+x, y, z = df_z.iloc[::step]["x"], df_z.iloc[::step]['y'], df_z.iloc[::step]["z"]
+Mx, My, Mz = df_z.iloc[::step]["Mx"], df_z.iloc[::step]['My'], df_z.iloc[::step]['Mz']
+Mnorm = np.sqrt(Mx**2+My**2 + Mz**2)
+Mxdir, Mydir, Mzdir = Mx/Mnorm, My/Mnorm, Mz/Mnorm
+Mlog = np.log10(Mnorm-Mnorm.min()+1)
+Mxlog, Mylog, Mzlog = Mxdir*Mlog, Mydir*Mlog, Mzdir*Mlog
+
+ax.quiver(x, y, z, Mxdir, Mydir, Mzdir)
 plt.show()

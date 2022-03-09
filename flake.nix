@@ -29,6 +29,7 @@
               python3Packages.pandas
               python3Packages.matplotlib
               python3Packages.numpy
+              python3Packages.seaborn
               printrun
               #python39Packages.jedi-language-server
               pkgs.nodePackages.pyright
