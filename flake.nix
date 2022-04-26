@@ -1,5 +1,5 @@
 {
-  description = "Tracking the motion of a head with magnetic sensors";
+  description = "Moment Reconstruction of Image";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -15,22 +15,31 @@
           # Overrides go here
         };
 
+    python = let
+        packageOverrides = self: super: {
+          scipy = super.scipy.overridePythonAttrs(old: rec {
+            version = "1.8.0";
+            src =  super.fetchPypi {
+              pname = "scipy";
+              inherit version;
+              sha256 = "MdTy1rckvJqY5Se1hJuKflib8epjDDOqVj7akSyf8L0=";
+             };
+          });
+        };
+             in pkgs.python3.override {inherit packageOverrides; self = python;};
 
-        packageName = "MagneticHeadMotionTracking";
+        packageName = "MagneticHeadTracking";
       in {
 #        packages.${packageName} = app;
 
 #        defaultPackage = self.packages.${system}.${packageName};
-
+#        python.withPackages (ps: [ps.numpy ps.scipy ps.pandas])
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ 
-              python3
-              python3Packages.scipy
-              python3Packages.pandas
-              python3Packages.matplotlib
-              python3Packages.numpy
-              python3Packages.seaborn
-              printrun
+              (python.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn]))
+              #python3Packages.numpy
+              #python3Packages.scipy
+              #python3Packages.pandas
               #python39Packages.jedi-language-server
               pkgs.nodePackages.pyright
               pkgs.mypy

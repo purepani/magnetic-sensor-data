@@ -1,0 +1,54 @@
+{
+  description = "Tracking the motion of a head with magnetic sensors";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+
+        customOverrides = self: super: {
+          # Overrides go here
+        }; 
+    #python = let
+    #    packageOverrides = self: super: {
+    #      scipy = super.scipy.overridePythonAttrs(old: rec {
+    #        version = "1.8.0";
+    #        src =  super.fetchPypi {
+    #          pname = "scipy";
+    #          inherit version;
+    #          sha256 = "0000shqj9zj1wyjhhw3kl2vas75vhhicvv72flvf1z3jvapgw295";
+    #        };
+    #      });
+    #    };
+    #         in pkgs.python3.override {inherit packageOverrides; self = python;};
+
+
+        packagename = "magneticheadmotiontracking";
+      in {
+#        packages.${packagename} = app;
+
+        defaultpackage = self.packages.${system}.${packagename};
+
+        devshell = pkgs.mkshell {
+          buildinputs = with pkgs; [ 
+              python3
+              python3packages.scipy
+              python3packages.pandas
+              python3packages.matplotlib
+              python3packages.numpy
+
+              printrun
+              #python39Packages.jedi-language-server
+              pkgs.nodePackages.pyright
+              pkgs.mypy
+          ];
+          inputsFrom = builtins.attrValues self.packages.${system};
+        };
+      });
+}
+

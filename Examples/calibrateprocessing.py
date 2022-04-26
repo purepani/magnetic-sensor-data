@@ -6,7 +6,9 @@ import pylab as plt
 import seaborn as sns
 from matplotlib.colors import LogNorm
 from mpl_toolkits.mplot3d import axes3d
+import multiprocessing as mp
 import os
+from functools import partial
 
 def get_stats(data):
     mag = data.loc[:,'Magnetometerx':'Magnetometerz'].set_axis(['Mx','My','Mz'],axis=1)
@@ -26,29 +28,36 @@ data_dict = {"x": [], "y":[] ,"z": [], "Mx":[], "My":[], "Mz":[], "Mx_std": [], 
 
 magnetic_labels = ["Mx", "My", "Mz"]
 position_labels = ["x", "y", "z"]
+def get_stats_from_file(folder, file):
+    position_labels = ["x", "y", "z"]
+    #print(f"{folder}/{file}")
+    try:
+        data = pd.read_csv(f"{folder}/{file}")
+    except:
+        print(f"{folder}/{file} failed to read.") 
+    file = file.removesuffix(".data")
+    coord_str = file.split("_")
+    coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
+
+    avg, std = get_stats(data)
+    return coord, avg, std
+    #for pos in position_labels:
+    #    data_dict[pos].append(coord[pos])
+    #    data_dict[f"M{pos}"].append(avg[f"M{pos}"])
+    #    data_dict[f"M{pos}_std"].append(std[f"M{pos}"])
+
 def read_data(folder, files, position_labels, name = "DataAvg.txt"):
     i = 0
-    for file in files:
-        #print(f"{folder}/{file}")
-        try:
-            data = pd.read_csv(f"{folder}/{file}")
-        except:
-            print(f"{folder}/{file} failed to read.") 
-            continue
-        file = file.removesuffix(".data")
-        coord_str = file.split("_")
-        coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
-
-        avg, std = get_stats(data)
-        #print(avg, std)
-        for pos in position_labels:
-            data_dict[pos].append(coord[pos])
-            data_dict[f"M{pos}"].append(avg[f"M{pos}"])
-            data_dict[f"M{pos}_std"].append(std[f"M{pos}"])
-        i = i + 1
-        if i%100 == 0:
-            print(i)
-        del data
+    with mp.Pool(processes=mp.cpu_count()) as pool:
+        for coord, avg, std in pool.imap_unordered(partial(get_stats_from_file, folder), files):
+            for pos in position_labels:
+                data_dict[pos].append(coord[pos])
+                data_dict[f"M{pos}"].append(avg[f"M{pos}"])
+                data_dict[f"M{pos}_std"].append(std[f"M{pos}"])
+            i = i + 1
+            if i%100 == 0:
+                print(i)
+            #del data
 
     df = pd.DataFrame(data_dict)
     df.to_csv(f"{folder}/{name}")
@@ -122,18 +131,12 @@ plt.ylabel("y")
 plt.xlabel("x")
 plt.show()
 
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
 
 
-step = int(input("Enter step for vector field: "))
-
-x, y, z = df_z.iloc[::step]["x"], df_z.iloc[::step]['y'], df_z.iloc[::step]["z"]
-Mx, My, Mz = df_z.iloc[::step]["Mx"], df_z.iloc[::step]['My'], df_z.iloc[::step]['Mz']
-Mnorm = np.sqrt(Mx**2+My**2 + Mz**2)
-Mxdir, Mydir, Mzdir = Mx/Mnorm, My/Mnorm, Mz/Mnorm
-Mlog = np.log10(Mnorm-Mnorm.min()+1)
-Mxlog, Mylog, Mzlog = Mxdir*Mlog, Mydir*Mlog, Mzdir*Mlog
-
-ax.quiver(x, y, z, Mxdir, Mydir, Mzdir)
+df_z = df[(df["x"]==-0.8) & ((df["y"]==0.0))]
+df_z.sort_values(by= ['z', 'y', 'x']) 
+z = df_z["z"]
+Bz = df_z["Mz"]
+plt.plot(z, Bz, "bo")
 plt.show()
+
