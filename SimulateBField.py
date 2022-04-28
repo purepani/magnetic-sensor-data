@@ -325,8 +325,12 @@ def poly_fit(file):
     print(Xfit.shape)
 
     model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+    model2 = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
 
     model = model.fit(X, M)
+    model2 = model2.fit(M, X)
+    pd.DataFrame(model2.get_params()).to_csv("Examples/calibration.csv")
+        
 
 
     Mfit = model.predict(Xfit)
