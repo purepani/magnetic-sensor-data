@@ -12,6 +12,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 import einops as eo
+import joblib
 
 def ellipp(n, m):
     n, m = (np.asarray(x) for x in (n, m))
@@ -329,8 +330,8 @@ def poly_fit(file):
 
     model = model.fit(X, M)
     model2 = model2.fit(M, X)
-    pd.DataFrame(model2.get_params()).to_csv("Examples/calibration.csv")
-        
+    #model2.save_json("Examples/calibration.csv")
+    joblib.dump(model2, 'Examples/calibration.pkl', compress = 1)   
 
 
     Mfit = model.predict(Xfit)
