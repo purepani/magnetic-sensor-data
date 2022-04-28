@@ -37,6 +37,8 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ 
               (python.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn]))
+              python39Packages.scikit-learn
+              python39Packages.einops
               #python3Packages.numpy
               #python3Packages.scipy
               #python3Packages.pandas

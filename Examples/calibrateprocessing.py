@@ -133,7 +133,8 @@ plt.show()
 
 
 
-df_z = df[(df["x"]==-0.8) & ((df["y"]==0.0))]
+
+df_z = df[(df["x"]==0) & ((df["y"]==0))]
 df_z.sort_values(by= ['z', 'y', 'x']) 
 z = df_z["z"]
 Bz = df_z["Mz"]

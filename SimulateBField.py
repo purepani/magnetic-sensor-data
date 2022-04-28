@@ -6,6 +6,12 @@ from scipy.integrate import quad
 from scipy.spatial.transform import Rotation 
 import scipy.optimize
 import pandas as pd
+import sklearn
+ 
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+import einops as eo
 
 def ellipp(n, m):
     n, m = (np.asarray(x) for x in (n, m))
@@ -158,9 +164,11 @@ def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
     return Bz
 
 
-def Bx_no_rot(X, x0, y0, z0, C):
+def Bx_no_rot(X,  z0, C):
     R=0.3
     L=0.1
+    x0=0
+    y0=0
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -168,18 +176,22 @@ def Bx_no_rot(X, x0, y0, z0, C):
     return Bx
 
 
-def By_no_rot(X, x0, y0, z0, C):
+def By_no_rot(X,  z0, C):
     R=0.3
     L=0.1
+    x0=0
+    y0=0
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
     By = By_func(xin, yin, zin, R, L, C)
     return By
 
-def Bz_no_rot(X, x0, y0, z0, C):
+def Bz_no_rot(X,  z0, C):
     R=0.3
     L=0.1
+    x0=0
+    y0=0
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -269,9 +281,9 @@ def fit_data_no_rot(file):
     Mx, My, Mz = np.array(df.loc[:, "Mx":"Mz"]).T
 
 #def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
-    lower_bounds = [-1, -1, -1, 0]
-    upper_bounds = [1,  1, 1, 100]
-    p0 = [0,0,-0.2, 50]
+    lower_bounds = [-.2,  0]
+    upper_bounds = [.2,  1e10]
+    p0 = [0, 50]
     method = "trf"
     popt, pcov = scipy.optimize.curve_fit(Bx_no_rot, X, Mx, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
     print(popt)
@@ -296,6 +308,48 @@ def fit_z(file):
     plt.plot(z, Bz_axis(z, C, z0), "ro")
     plt.show()
 
+def poly_fit(file): 
+    df = pd.read_csv(file)
+    print(df)
+    X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
+    M = np.array(df.loc[:, "Mx":"Mz"])
+
+    print(X.shape, M.shape)
+    max = 5
+    samples = 20
+    xx, yy, zz = np.linspace(-max, max, samples), np.linspace(-max, max, samples), np.linspace(-max, max, samples)
+    Xfit = np.meshgrid(xx, yy, zz)
+
+    Xfit = np.array([eo.rearrange(x, "x y z -> (x y z)") for x in Xfit]).T
+
+    print(Xfit.shape)
+
+    model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+
+    model = model.fit(X, M)
+
+
+    Mfit = model.predict(Xfit)
+    print(Mfit.shape)
+    ind = 14
+
+    Xfit = eo.rearrange(Xfit, " (x y z) s -> x y z s", x=samples, y=samples)
+    Mfit = eo.rearrange(Mfit, " (x y z) s -> x y z s", x=samples, y=samples)
+
+    Mnorm = np.sqrt(Mfit[:,:,ind,0]**2+Mfit[:,:,ind,1]**2 + Mfit[:,:,ind,2]**2)
+    Mxdir, Mydir = Mfit[:,:,ind,0]/Mnorm, Mfit[:,:,ind, 1]/Mnorm 
+    Mlog = np.log10(Mnorm-Mnorm.min()+1)
+    Mxlog, Mylog = Mxdir*Mlog, Mydir*Mlog
+
+    colormap='jet'
+    plt.quiver(Xfit[:,:,ind, 0], Xfit[:,:,ind, 1], Mxlog, Mylog, Mnorm, cmap=colormap, scale = 10)
+
+    #plt.quiver(tt[:,:,ind], rr[:,:,ind], Bxlog[:,:,ind], Bylog[:,:,ind], Bnorm[:,:,ind], cmap=colormap, scale = 100)
+    plt.colorbar()
+    plt.show()
+
+
 if __name__== "__main__": 
-    fit_z("Examples/0.8mm-cal/DataAvg.txt") 
+    poly_fit("Examples/0.5mm-cal/DataAvg.txt")
+    #fit_data_no_rot("Examples/0.5mm-cal/DataAvg.txt") 
     #graph_B_field()
