@@ -2,11 +2,19 @@ import adafruit_bno055
 #import TLV
 import board
 import busio
+import pandas as pd
 
 from time import sleep
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation as animation
+from functools import partial
+
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+import einops as eo
+
 
 i2c = busio.I2C(board.SCL, board.SDA)
 tlv493d = adafruit_bno055.BNO055_I2C(i2c)
@@ -29,11 +37,39 @@ scat = ax.scatter(point[0], point[1], point[2], s = 5)
 linepnts = [((0, -lim), (0, 0), (0,0)), ((0,0), (0, lim), (0,0)),((0,0), (0,0), (0, -lim))]
 lines = [ax.plot(line[0], line[1], line[2], "--", color="orange")[0] for line in linepnts]
 
+def poly_fit(file): 
+    df = pd.read_csv(file)
+    print(df)
+    X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
+    M = np.array(df.loc[:, "Mx":"Mz"])
 
-def animate(i):
+    print(X.shape, M.shape)
+    max = 5
+    samples = 20
+    xx, yy, zz = np.linspace(-max, max, samples), np.linspace(-max, max, samples), np.linspace(-max, max, samples)
+    Xfit = np.meshgrid(xx, yy, zz)
+
+    Xfit = np.array([eo.rearrange(x, "x y z -> (x y z)") for x in Xfit]).T
+
+    print(Xfit.shape)
+
+    model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+
+    model = model.fit(M, X)
+    return model
+
+
+
+def animate(model, i):
     x, y, z = tlv493d.magnetic
-    point = [[x],[y],[z]]
-    print(point)
+    step = 20
+    point = np.array([x,y,z])
+    #xbool = (data["Mx"]  < x+step) & (data["Mx"]>x-step)
+    #ybool = (data["My"]  < y+step) & (data["My"]>y-step)
+    #zbool = (data["Mz"]  < z+step) & (data["Mz"]>z-step)
+    #print(data[xbool & ybool & zbool].loc[:, "x":"z"])    
+    X = model.predict(point[np.newaxis, :]) 
+    print(X)
     scat._offsets3d = point 
     linepnts = np.array([[[x, -lim], [y, y], [z,z]], [[x,x], [y, lim], [z,z]],[[x,x], [y,y], [z, -lim]]])
     for i, line in enumerate(lines):
@@ -41,8 +77,12 @@ def animate(i):
         line.set_3d_properties(linepnts[i][2])
 
 if __name__=="__main__":
-    
-    ani = animation.FuncAnimation(fig, animate, interval=50)
+    #data = pd.read_csv("1mm-2-sweep/DataAvg.txt")
+    #data = pd.read_csv("/media/pi/58ba4525-1a76-44b4-9f48-8c15e728a138/0.2mm-2/DataAvg.txt")
+    #print(data)
+    model = poly_fit("0.5mm-cal")
+
+    ani = animation.FuncAnimation(fig, partial(animate, model), interval=50)
     plt.show()
 #while True:
 #    tlv493d.update_data()
