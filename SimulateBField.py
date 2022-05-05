@@ -7,12 +7,15 @@ from scipy.spatial.transform import Rotation
 import scipy.optimize
 import pandas as pd
 import sklearn
+from scipy.interpolate import RBFInterpolator
  
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 import einops as eo
 import joblib
+import dill 
+
 
 def ellipp(n, m):
     n, m = (np.asarray(x) for x in (n, m))
@@ -315,6 +318,8 @@ def poly_fit(file):
     X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
     M = np.array(df.loc[:, "Mx":"Mz"])
 
+    #M = eo.rearrange(M, "N P -> P N")
+    #X = eo.rearrange(X, "N P -> P N")
     print(X.shape, M.shape)
     max = 5
     samples = 20
@@ -325,33 +330,46 @@ def poly_fit(file):
 
     print(Xfit.shape)
 
-    model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
-    model2 = Pipeline([('poly', PolynomialFeatures(degree=4)), ('linear', LinearRegression(fit_intercept=False))])
+    step=5
+    interpolator = RBFInterpolator(M, X, kernel="multiquadric", epsilon=1, neighbors=10000)
+    with open('Examples/calibration.pkl', 'wb') as file: 
+        dill.dump(interpolator, file)   
 
-    model = model.fit(X, M)
-    model2 = model2.fit(M, X)
+    #Mfit = interpolator(Xfit)
+
+    #model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+    #degree = int(input("Enter degree to fit: "))
+    #model2 = Pipeline([('poly', PolynomialFeatures(degree=degree)), ('linear', LinearRegression(fit_intercept=False))])
+
+    
+    
+    
+    #model = model.fit(X, M)
+    #model2 = model2.fit(M, X)
+    #print("Done training model")
     #model2.save_json("Examples/calibration.csv")
-    joblib.dump(model2, 'Examples/calibration.pkl', compress = 1)   
+    #joblib.dump(model2, 'Examples/calibration.pkl', compress = 1)   
 
+    #print(model2.score(M, X))
+    #Mfit = model.predict(Xfit)
+    #print(Mfit.shape)
+    #ind = 14
 
-    Mfit = model.predict(Xfit)
-    print(Mfit.shape)
-    ind = 14
+    #Xfit = eo.rearrange(Xfit, " (x y z) s -> x y z s", x=samples, y=samples)
+    #Mfit = eo.rearrange(Mfit, " (x y z) s -> x y z s", x=samples, y=samples)
 
-    Xfit = eo.rearrange(Xfit, " (x y z) s -> x y z s", x=samples, y=samples)
-    Mfit = eo.rearrange(Mfit, " (x y z) s -> x y z s", x=samples, y=samples)
+    #Mnorm = np.sqrt(Mfit[:,:,ind,0]**2+Mfit[:,:,ind,1]**2 + Mfit[:,:,ind,2]**2)
+    #Mxdir, Mydir = Mfit[:,:,ind,0]/Mnorm, Mfit[:,:,ind, 1]/Mnorm 
+    #Mlog = np.log10(Mnorm-Mnorm.min()+1)
+    #Mxlog, Mylog = Mxdir*Mlog, Mydir*Mlog
 
-    Mnorm = np.sqrt(Mfit[:,:,ind,0]**2+Mfit[:,:,ind,1]**2 + Mfit[:,:,ind,2]**2)
-    Mxdir, Mydir = Mfit[:,:,ind,0]/Mnorm, Mfit[:,:,ind, 1]/Mnorm 
-    Mlog = np.log10(Mnorm-Mnorm.min()+1)
-    Mxlog, Mylog = Mxdir*Mlog, Mydir*Mlog
+    #colormap='jet'
 
-    colormap='jet'
-    plt.quiver(Xfit[:,:,ind, 0], Xfit[:,:,ind, 1], Mxlog, Mylog, Mnorm, cmap=colormap, scale = 10)
+    #plt.quiver(Xfit[:,:,ind, 0], Xfit[:,:,ind, 1], Mxlog, Mylog, Mnorm, cmap=colormap, scale = 10)
 
     #plt.quiver(tt[:,:,ind], rr[:,:,ind], Bxlog[:,:,ind], Bylog[:,:,ind], Bnorm[:,:,ind], cmap=colormap, scale = 100)
-    plt.colorbar()
-    plt.show()
+    #plt.colorbar()
+    #plt.show()
 
 
 if __name__== "__main__": 
