@@ -331,7 +331,7 @@ def poly_fit(file):
     print(Xfit.shape)
 
     step=5
-    interpolator = RBFInterpolator(M, X, kernel="multiquadric", epsilon=1, neighbors=400)
+    interpolator = RBFInterpolator(M[::step, :], X[::step, :], kernel="multiquadric", epsilon=1, neighbors=10000)
     with open('Examples/calibration.pkl', 'wb') as file: 
         dill.dump(interpolator, file)   
 
