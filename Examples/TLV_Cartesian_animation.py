@@ -14,7 +14,8 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 #import einops as eo
-import joblib
+#import joblib
+import dill
 
 
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -69,7 +70,8 @@ def animate(model, i):
     #ybool = (data["My"]  < y+step) & (data["My"]>y-step)
     #zbool = (data["Mz"]  < z+step) & (data["Mz"]>z-step)
     #print(data[xbool & ybool & zbool].loc[:, "x":"z"])    
-    X = model.predict(point[np.newaxis, :]) 
+    #X = model.predict(point[np.newaxis, :]) 
+    X = model(point)
     print(X)
     scat._offsets3d = point 
     linepnts = np.array([[[x, -lim], [y, y], [z,z]], [[x,x], [y, lim], [z,z]],[[x,x], [y,y], [z, -lim]]])
@@ -78,10 +80,10 @@ def animate(model, i):
         line.set_3d_properties(linepnts[i][2])
 
 if __name__=="__main__":
-    model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
+    #model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
     #data = pd.read_csv("/media/pi/58ba4525-1a76-44b4-9f48-8c15e728a138/0.2mm-2/DataAvg.txt")
     #print(data)
-    model = joblib.load("calibration.pkl")
+    model = dill.load("calibration.pkl")
     ani = animation.FuncAnimation(fig, partial(animate, model), interval=50)
     plt.show()
 #while True:
