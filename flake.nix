@@ -39,6 +39,7 @@
               (python.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn]))
               python39Packages.scikit-learn
               python39Packages.einops
+              python39Packages.psutil
               python39Packages.dill
               #python3Packages.numpy
               #python3Packages.scipy

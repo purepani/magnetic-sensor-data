@@ -8,6 +8,7 @@ import scipy.optimize
 import pandas as pd
 import sklearn
 from scipy.interpolate import RBFInterpolator
+from scipy.interpolate import LinearNDInterpolator 
  
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -16,6 +17,7 @@ import einops as eo
 import joblib
 import dill 
 
+import sys
 
 def ellipp(n, m):
     n, m = (np.asarray(x) for x in (n, m))
@@ -330,11 +332,20 @@ def poly_fit(file):
 
     print(Xfit.shape)
 
-    step=5
-    interpolator = RBFInterpolator(M[::step, :], X[::step, :], kernel="multiquadric", epsilon=1, neighbors=10000)
-    with open('Examples/calibration.pkl', 'wb') as file: 
-        dill.dump(interpolator, file)   
+    step=1
+    #interpolator = RBFInterpolator(M, X, kernel="gaussian", epsilon=10, neighbors=100)
+    interpolator = LinearNDInterpolator(M, X)
 
+    print(sys.getsizeof(interpolator))
+
+    with open('Examples/calibration.pkl', 'wb') as file: 
+       dill.dump(interpolator, file)   
+
+    point = np.array([6.5, -14.1, -3.1])[np.newaxis, :]
+    print(interpolator(point))
+    print(np.allclose(X, interpolator(M)))
+
+    import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
     #Mfit = interpolator(Xfit)
 
     #model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
