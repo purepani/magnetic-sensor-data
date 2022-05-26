@@ -16,6 +16,7 @@ from sklearn.pipeline import Pipeline
 import einops as eo
 import joblib
 import dill 
+import time
 
 import sys
 
@@ -170,11 +171,12 @@ def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
     return Bz
 
 
-def Bx_no_rot(X,  z0, C):
+def Bx_no_rot(X, C):
     R=0.3
     L=0.1
-    x0=0
-    y0=0
+    x0=-1.5
+    y0=-0.6
+    z0=1.6
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -182,22 +184,24 @@ def Bx_no_rot(X,  z0, C):
     return Bx
 
 
-def By_no_rot(X,  z0, C):
+def By_no_rot(X, C):
     R=0.3
     L=0.1
-    x0=0
-    y0=0
+    x0=-1.5
+    y0=-0.6
+    z0=1.6
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
     By = By_func(xin, yin, zin, R, L, C)
     return By
 
-def Bz_no_rot(X,  z0, C):
+def Bz_no_rot(X, C):
     R=0.3
     L=0.1
-    x0=0
-    y0=0
+    x0=-1.5
+    y0=-0.6
+    z0=1.6
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -287,9 +291,9 @@ def fit_data_no_rot(file):
     Mx, My, Mz = np.array(df.loc[:, "Mx":"Mz"]).T
 
 #def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
-    lower_bounds = [-.2,  0]
-    upper_bounds = [.2,  1e10]
-    p0 = [0, 50]
+    lower_bounds = [-1e15]
+    upper_bounds = [1e15]
+    p0 = [50]
     method = "trf"
     popt, pcov = scipy.optimize.curve_fit(Bx_no_rot, X, Mx, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
     print(popt)
@@ -314,7 +318,8 @@ def fit_z(file):
     plt.plot(z, Bz_axis(z, C, z0), "ro")
     plt.show()
 
-def poly_fit(file): 
+def poly_fit(folder, file_name="DataAvg.txt"): 
+    file = f"{folder}/{file_name}"
     df = pd.read_csv(file)
     print(df)
     X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
@@ -333,20 +338,29 @@ def poly_fit(file):
     print(Xfit.shape)
 
     step=1
-    #interpolator = RBFInterpolator(M, X, kernel="gaussian", epsilon=10, neighbors=100)
+    #interpolator = RBFInterpolator(M, X, kernel="multiquadric", epsilon=1000, neighbors=1000)
     interpolator = LinearNDInterpolator(M, X)
 
     print(sys.getsizeof(interpolator))
 
-    with open('Examples/calibration.pkl', 'wb') as file: 
+    with open(f'{folder}/calibration.pkl', 'wb') as file: 
        dill.dump(interpolator, file)   
 
     point = np.array([6.5, -14.1, -3.1])[np.newaxis, :]
-    print(interpolator(point))
-    print(np.allclose(X, interpolator(M)))
+    start = time.time()
+    
+    X_est = interpolator(point)
+    end = time.time()
 
-    import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
-    #Mfit = interpolator(Xfit)
+    print(f"That took {end - start} seconds.")
+
+    print(X_est)
+
+    print(np.allclose(X, X_est, atol=1e-3))
+    print("Avg err: ")
+    print(np.sqrt(np.sum((X-X_est)**2))/X.size)
+
+    import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) #Mfit = interpolator(Xfit)
 
     #model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
     #degree = int(input("Enter degree to fit: "))
@@ -384,6 +398,7 @@ def poly_fit(file):
 
 
 if __name__== "__main__": 
-    poly_fit("Examples/0.5mm-cal/DataAvg.txt")
-    #fit_data_no_rot("Examples/0.5mm-cal/DataAvg.txt") 
+    #folder = input("Enter folder name: ")
+    #poly_fit(folder)
+    fit_data_no_rot("Examples/0.2mm-cal/DataAvg.txt") 
     #graph_B_field()

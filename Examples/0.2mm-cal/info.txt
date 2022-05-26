@@ -1,0 +1,2 @@
+,xlim_min,xlim_max,ylim_min,ylim_max,zlim_min,zlim_max,x_step,y_step,z_step
+0,-8,8,-8,8,0,8,0.2,0.2,0.2
