@@ -1,7 +1,7 @@
 from os import wait
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import ellipk, ellipe, elliprf, elliprj
+from scipy.special import ellipk, ellipe, elliprf, elliprj 
 from scipy.integrate import quad
 from scipy.spatial.transform import Rotation 
 import scipy.optimize
@@ -17,6 +17,7 @@ import einops as eo
 import joblib
 import dill 
 import time
+from functools import partial
 
 import sys
 
@@ -171,12 +172,7 @@ def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
     return Bz
 
 
-def Bx_no_rot(X, C):
-    R=0.3
-    L=0.1
-    x0=-1.5
-    y0=-0.6
-    z0=1.6
+def Bx_no_rot(x0, y0, z0, R, L, X, C):
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -184,24 +180,14 @@ def Bx_no_rot(X, C):
     return Bx
 
 
-def By_no_rot(X, C):
-    R=0.3
-    L=0.1
-    x0=-1.5
-    y0=-0.6
-    z0=1.6
+def By_no_rot(x0, y0, z0, R, L, X, C):
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
     By = By_func(xin, yin, zin, R, L, C)
     return By
 
-def Bz_no_rot(X, C):
-    R=0.3
-    L=0.1
-    x0=-1.5
-    y0=-0.6
-    z0=1.6
+def Bz_no_rot(x0, y0, z0, R, L, X, C):
     x, y, z = X
     xin, yin, zin = x-x0, y-y0, z-z0
 
@@ -289,18 +275,32 @@ def fit_data_no_rot(file):
     print(df)
     X = np.array(df.loc[:, "x":"z"]).T # unpacks to x, y, z
     Mx, My, Mz = np.array(df.loc[:, "Mx":"Mz"]).T
-
+    
+    x, y, z = X
+    #Mx, My, Mz = Bx_func(x, y, z, R=0.3, L=0.1), By_func(x, y, z, R=0.3, L=0.1), Bz_func(x, y, z, R=0.3, L=0.1)
 #def Bz(X, x0, y0, z0, rx, ry, rz, R, L, C):
     lower_bounds = [-1e15]
     upper_bounds = [1e15]
-    p0 = [50]
+    p0 = [1e5]
     method = "trf"
-    popt, pcov = scipy.optimize.curve_fit(Bx_no_rot, X, Mx, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
-    print(popt)
-    popt, pcov= scipy.optimize.curve_fit(By_no_rot, X, My, p0=p0,  bounds=(lower_bounds, upper_bounds), method=method)
-    print(popt)
-    popt, pcov = scipy.optimize.curve_fit(Bz_no_rot, X, Mz, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
-    print(popt)
+    def fit_B(args):
+        x0, y0, z0, R, L = list(args)
+        print("-----------------------------------")
+        Bx = partial(Bx_no_rot, x0, y0, z0, R, L)
+        By = partial(By_no_rot, x0, y0, z0, R, L)
+        Bz = partial(Bz_no_rot, x0, y0, z0, R, L)
+        popt1, pcov = scipy.optimize.curve_fit(Bx, X, Mx, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
+        print(popt1)
+        popt2, pcov= scipy.optimize.curve_fit(By, X, My, p0=p0,  bounds=(lower_bounds, upper_bounds), method=method)
+        print(popt2)
+        popt3, pcov = scipy.optimize.curve_fit(Bz, X, Mz, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
+        print(popt3)
+
+        sum = (popt1-popt2)**2+(popt2-popt3)**2+(popt3-popt1)**2
+        return sum
+    res = scipy.optimize.minimize(fit_B, np.array([-1.5, 0.3, 0.2, 0.3, 0.1]))
+    print(res)
+        
 
 def fit_z(file):
     df = pd.read_csv(file)
