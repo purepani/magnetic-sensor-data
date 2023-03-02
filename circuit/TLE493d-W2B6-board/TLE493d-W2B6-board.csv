@@ -1,0 +1,7 @@
+Comment,Designator,Footprint,LCSC
+100nF,C1,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+Conn_01x04,J1,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal,C402773
+1.2kOhm,"R1,R2",Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C22765
+TLV493D,U1,Package_TO_SOT_SMD:SOT-23-6,C539803
+TLV493D,U2,Package_TO_SOT_SMD:SOT-23-6,C539804
+TLV493D,U3,Package_TO_SOT_SMD:SOT-23-6,C539805

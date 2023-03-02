@@ -1,7 +1,7 @@
 from os import wait
 import numpy as np
-import matplotlib.pyplot as plt
-#from scipy.special import ellipk, ellipe, elliprf, elliprj 
+import matplotlib.pyplot as plt 
+from scipy.special import ellipk, ellipe, elliprf, elliprj 
 from scipy.integrate import quad
 from scipy.spatial.transform import Rotation 
 import scipy.optimize
@@ -21,6 +21,9 @@ from functools import partial
 
 import sys
 
+mu0 = 1.25663e-6 #N/A**2 units
+
+
 def ellipp(n, m):
     n, m = (np.asarray(x) for x in (n, m))
     if np.any(m >= 1):
@@ -29,6 +32,7 @@ def ellipp(n, m):
     rf = elliprf(0, y, 1)
     rj = elliprj(0, y, 1, 1 - n)
     return rf + rj * n / 3
+
 
 def ellipc(kc, p, c, s):
     kc, p, c, s = (np.asarray(x, dtype = np.float64) for x in (kc, p, c, s))
@@ -99,46 +103,68 @@ def k(xi, rr, R):
     den = (xi**2 + (R+rr)**2)
     return np.sqrt(num/den)
 
-def Br_func(rr, zz, R=3, L=2, C=1e3):
+def Br_func(rr, zz, R=0.03, L=0.02, C=1.4):
+    Bmax = C
+    M = (Bmax)*(np.sqrt(4*L**2 +R**2)/(2*L))
+
     xi_p, xi_m = zz+L, zz-L
     alpha_p, alpha_m = alpha(xi_p, rr, R), alpha(xi_m, rr, R)
 
 
     kp, km = k(xi_p, rr, R), k(xi_m, rr, R)
 
-    Br = C * (alpha_p*ellipc(kp, 1, 1, -1) - alpha_m*ellipc(km, 1, 1, -1))
+    Br = (M*R/np.pi)* (alpha_p*ellipc(kp, 1, 1, -1) - alpha_m*ellipc(km, 1, 1, -1))
     return Br
 
-def Bz_polar_func(rr, zz, R=3, L=2, C=1e3):
+def Bz_polar_func(rr, zz, R=0.03, L=0.02, C=1.4):
+    Bmax = C
+    M = (Bmax)*(np.sqrt(4*L**2 +R**2)/(2*L))
     xi_p, xi_m = zz+L, zz-L
     beta_p, beta_m = beta(xi_p, rr, R), beta(xi_m, rr, R)
     gamma = (R-rr)/(R+rr)
 
     kp, km = k(xi_p, rr, R), k(xi_m, rr, R)
 
-    Bz = C*R/(R+rr) * (beta_p*ellipc(kp, gamma**2, 1, gamma) - beta_m*ellipc(km, gamma**2, 1, gamma))
+    Bz = (R*M/(np.pi*(rr+R))) * (beta_p*ellipc(kp, gamma**2, 1, gamma) - beta_m*ellipc(km, gamma**2, 1, gamma))
     return Bz
 
 
-def Bx_func(xx, yy, zz, R=3, L=2, C=1e3):
+def Bxyz_func(xx, yy, zz, R=3, L=2, C=1e3):
     tt = np.arctan2(yy,xx)
     rr = np.sqrt(xx**2 + yy**2)
     Br = Br_func(rr, zz, R, L, C)
     Bx = Br * np.cos(tt)
-    return Bx
+    By = Br * np.sin(tt)
+    Bz = Bz_polar_func(rr, zz, R, L, C)
+    return Bx, By, Bz
+
+#def Bx_func(xx, yy, zz, R=3, L=2, C=1e3):
+#    tt = np.arctan2(yy,xx)
+#    rr = np.sqrt(xx**2 + yy**2)
+#    Br = Br_func(rr, zz, R, L, C)
+#    Bx = Br * np.cos(tt)
+#    return Bx
+
+#def By_func(xx, yy, zz, R=3, L=2, C=1e3):
+#    tt = np.arctan2(yy,xx)
+#    rr = np.sqrt(xx**2 + yy**2)
+#    Br = Br_func(rr, zz, R, L, C)
+#    By = Br * np.sin(tt)
+#    return By
+
+#def Bz_func(xx, yy, zz, R=3, L=2, C=1e3):
+#    rr = np.sqrt(xx**2 + yy**2)
+#    Bz = Bz_polar_func(rr, zz, R, L, C)
+#    return Bz
+
+def Bx_func(xx, yy, zz, R=3, L=2, C=1e3):
+    return Bxyz_func(xx, yy, zz, R, L, C)[0]
 
 def By_func(xx, yy, zz, R=3, L=2, C=1e3):
-    tt = np.arctan2(yy,xx)
-    rr = np.sqrt(xx**2 + yy**2)
-    Br = Br_func(rr, zz, R, L, C)
-    By = Br * np.sin(tt)
-    return By
-
+    return Bxyz_func(xx, yy, zz, R, L, C)[1]
 
 def Bz_func(xx, yy, zz, R=3, L=2, C=1e3):
-    rr = np.sqrt(xx**2 + yy**2)
-    Bz = Bz_polar_func(rr, zz, R, L, C)
-    return Bz
+    return Bxyz_func(xx, yy, zz, R, L, C)[2]
 
 def Bx(X, x0, y0, z0, rx, ry, rz, R, L, C):
     rot_vec = np.array([rx, ry, rz])
@@ -196,7 +222,8 @@ def Bz_no_rot(x0, y0, z0, R, L, X, C):
 
 def graph_B_field():
     samples = 137
-    max = 10 
+    max = 0.005
+    #max = 10 
     x = np.linspace(-max, max, samples)
     y = np.linspace(-max, max, samples)
     z = np.linspace(-max, max, samples)
@@ -204,11 +231,16 @@ def graph_B_field():
     xx, yy, zz = np.meshgrid(x, y, z)
 
     # dimentions in mm
-    L = 5.03 
-    C = 10
-    R = 1.03
+    L = 0.002 
+    C = 1.4
+    R = 0.003 
 
+    #L = 2 
+    #C = 1
+    #R = 3 
 
+    Bmax = C
+    M = (Bmax)*(np.sqrt(4*L**2 +R**2)/(2*L))
 
     x_in = xx 
     y_in = yy 
@@ -248,7 +280,7 @@ def graph_B_field():
 
     ind = samples//2
 
-    Bz_axis = C*np.pi/2 *( (z+L)/np.sqrt(((z+L)**2 + R**2)) - (z-L)/np.sqrt((z-L)**2+R**2) )
+    Bz_axis = M/2 *( (z+L)/np.sqrt(((z+L)**2 + R**2)) - (z-L)/np.sqrt((z-L)**2+R**2) )
     plt.plot(zz[ind, ind, :], Bz[ind, ind, :])
     plt.plot(z, Bz_axis)
     plt.show()
@@ -270,8 +302,7 @@ def fit_data(file):
     popt, pcov = scipy.optimize.curve_fit(Bz, X, Mz, p0=p0, bounds=(lower_bounds, upper_bounds), method=method)
     print(popt)
 
-def fit_data_no_rot(file):
-    df = pd.read_csv(file)
+def fit_data_no_rot(df):
     print(df)
     X = np.array(df.loc[:, "x":"z"]).T # unpacks to x, y, z
     Mx, My, Mz = np.array(df.loc[:, "Mx":"Mz"]).T
@@ -318,9 +349,7 @@ def fit_z(file):
     plt.plot(z, Bz_axis(z, C, z0), "ro")
     plt.show()
 
-def poly_fit(folder, file_name="DataAvg.txt"): 
-    f = f"{folder}/{file_name}"
-    df = pd.read_csv(f)
+def interpolate_df(df):
     print(df)
     X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
     M = np.array(df.loc[:, "Mx":"Mz"])
@@ -340,6 +369,32 @@ def poly_fit(folder, file_name="DataAvg.txt"):
     step=1
     #interpolator = RBFInterpolator(M, X, kernel="multiquadric", epsilon=1000, neighbors=1000)
     interpolator = LinearNDInterpolator(M, X)
+    return interpolator
+
+
+def poly_fit(folder, file_name="DataAvg.txt"): 
+    file = f"{folder}/{file_name}"
+    df = pd.read_csv(file)
+    #print(df)
+    #X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
+    #M = np.array(df.loc[:, "Mx":"Mz"])
+
+    #M = eo.rearrange(M, "N P -> P N")
+    #X = eo.rearrange(X, "N P -> P N")
+    #print(X.shape, M.shape)
+    #max = 5
+    #samples = 20
+    #xx, yy, zz = np.linspace(-max, max, samples), np.linspace(-max, max, samples), np.linspace(-max, max, samples)
+    #Xfit = np.meshgrid(xx, yy, zz)
+
+    #Xfit = np.array([eo.rearrange(x, "x y z -> (x y z)") for x in Xfit]).T
+
+    #print(Xfit.shape)
+
+    #step=1
+    #interpolator = RBFInterpolator(M, X, kernel="multiquadric", epsilon=1000, neighbors=1000)
+    #interpolator = LinearNDInterpolator(M, X)
+    interpolator = interpolate_df(df)
 
     print(sys.getsizeof(interpolator))
     
@@ -360,7 +415,7 @@ def poly_fit(folder, file_name="DataAvg.txt"):
     print("Avg err: ")
     print(np.sqrt(np.sum((X-X_est)**2))/X.size)
 
-    import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) #Mfit = interpolator(Xfit)
+    # #import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) #Mfit = interpolator(Xfit)
 
     #model = Pipeline([('poly', PolynomialFeatures(degree=6)), ('linear', LinearRegression(fit_intercept=False))])
     #degree = int(input("Enter degree to fit: "))
@@ -395,6 +450,13 @@ def poly_fit(folder, file_name="DataAvg.txt"):
     #plt.quiver(tt[:,:,ind], rr[:,:,ind], Bxlog[:,:,ind], Bylog[:,:,ind], Bnorm[:,:,ind], cmap=colormap, scale = 100)
     #plt.colorbar()
     #plt.show()
+
+def sensor(M, prec, noise, X):
+    return M(X) +np.random.normal(scale=noise, size=X.shape)
+    
+
+def magnetic_field(X, R=3, L=1, C=1e3):
+    return Bxyz_func(X[:, 0], X[:, 1], X[:, 2], R, L, C)
 
 
 if __name__== "__main__": 

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/satwik/Documents/Research/MagneticSensorTracking/circuit/TLE493d-W2B6-board/TLE493d-W2B6-board.kicad_sch</source>
+    <date>Tue 30 Aug 2022 03:14:54 PM CDT</date>
+    <tool>Eeschema 6.0.5</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>TLE493d-W2B6-board.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder</footprint>
+      <fields>
+        <field name="LCSC">C14663</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC" value="C14663"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2f4daea7-309a-4143-8916-030522bf51e3</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>Conn_01x04</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal</footprint>
+      <fields>
+        <field name="LCSC">C402773</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x04" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC" value="C402773"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>57d8167d-eea1-43df-98ad-ca5686b0cc2a</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>1.2kOhm</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder</footprint>
+      <fields>
+        <field name="LCSC">C22765</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC" value="C22765"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>922b8a53-fbfc-4dc2-a65a-66992f29b744</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>1.2kOhm</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder</footprint>
+      <fields>
+        <field name="LCSC">C22765</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC" value="C22765"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ad13f75e-87c0-4cfa-a4b1-3bf409a63996</tstamps>
+    </comp>
+    <comp ref="U1">
+      <value>TLV493D</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-6</footprint>
+      <datasheet>http://www.infineon.com/dgdl/Infineon-TLV493D-A1B6-DS-v01_00-EN.pdf?fileId=5546d462525dbac40152a6b85c760e80</datasheet>
+      <fields>
+        <field name="LCSC">C539803</field>
+      </fields>
+      <libsource lib="Sensor_Magnetic" part="TLV493D" description="Low power 3D magnetic sensor, I2C interface, SOT-23-6"/>
+      <property name="LCSC" value="C539803"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d0b5b6d1-d4c2-4a4e-957d-817712b1c585</tstamps>
+    </comp>
+    <comp ref="U2">
+      <value>TLV493D</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-6</footprint>
+      <datasheet>http://www.infineon.com/dgdl/Infineon-TLV493D-A1B6-DS-v01_00-EN.pdf?fileId=5546d462525dbac40152a6b85c760e80</datasheet>
+      <fields>
+        <field name="LCSC">    C539804</field>
+      </fields>
+      <libsource lib="Sensor_Magnetic" part="TLV493D" description="Low power 3D magnetic sensor, I2C interface, SOT-23-6"/>
+      <property name="LCSC" value="    C539804"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3e557476-4ccb-4e37-b8b5-7e16f6b7a8f7</tstamps>
+    </comp>
+    <comp ref="U3">
+      <value>TLV493D</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-6</footprint>
+      <datasheet>http://www.infineon.com/dgdl/Infineon-TLV493D-A1B6-DS-v01_00-EN.pdf?fileId=5546d462525dbac40152a6b85c760e80</datasheet>
+      <fields>
+        <field name="LCSC">C539805</field>
+      </fields>
+      <libsource lib="Sensor_Magnetic" part="TLV493D" description="Low power 3D magnetic sensor, I2C interface, SOT-23-6"/>
+      <property name="LCSC" value="C539805"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="TLE493d-W2B6-board.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b0b7ab09-f014-4c8b-94fa-ea7fa0bb00dd</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector_Generic" part="Conn_01x04">
+      <description>Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x04</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Sensor_Magnetic" part="TLV493D">
+      <description>Low power 3D magnetic sensor, I2C interface, SOT-23-6</description>
+      <docs>http://www.infineon.com/dgdl/Infineon-TLV493D-A1B6-DS-v01_00-EN.pdf?fileId=5546d462525dbac40152a6b85c760e80</docs>
+      <footprints>
+        <fp>SOT?23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">TLV493D</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-6</field>
+        <field name="Datasheet">http://www.infineon.com/dgdl/Infineon-TLV493D-A1B6-DS-v01_00-EN.pdf?fileId=5546d462525dbac40152a6b85c760e80</field>
+      </fields>
+      <pins>
+        <pin num="1" name="SCL/INT" type="bidirectional"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="GND" type="power_in"/>
+        <pin num="4" name="VDD" type="power_in"/>
+        <pin num="5" name="GND" type="power_in"/>
+        <pin num="6" name="SDA/ADDR" type="bidirectional"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector_Generic">
+      <uri>/nix/store/4qbmg374l97l02v0mdrb7f3bxznirxh6-kicad-symbols-c7f82c947a/share/kicad/symbols/Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>/nix/store/4qbmg374l97l02v0mdrb7f3bxznirxh6-kicad-symbols-c7f82c947a/share/kicad/symbols/Device.kicad_sym</uri>
+    </library>
+    <library logical="Sensor_Magnetic">
+      <uri>/nix/store/4qbmg374l97l02v0mdrb7f3bxznirxh6-kicad-symbols-c7f82c947a/share/kicad/symbols/Sensor_Magnetic.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3V3">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+      <node ref="U1" pin="4" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U2" pin="4" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U3" pin="4" pinfunction="VDD" pintype="power_in"/>
+    </net>
+    <net code="2" name="GND">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="J1" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="U1" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U2" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U3" pin="2" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="3" name="SCL">
+      <node ref="J1" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+      <node ref="U1" pin="1" pinfunction="SCL/INT" pintype="bidirectional"/>
+      <node ref="U2" pin="1" pinfunction="SCL/INT" pintype="bidirectional"/>
+      <node ref="U3" pin="1" pinfunction="SCL/INT" pintype="bidirectional"/>
+    </net>
+    <net code="4" name="SDA">
+      <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="U1" pin="6" pinfunction="SDA/ADDR" pintype="bidirectional"/>
+      <node ref="U2" pin="6" pinfunction="SDA/ADDR" pintype="bidirectional"/>
+      <node ref="U3" pin="6" pinfunction="SDA/ADDR" pintype="bidirectional"/>
+    </net>
+    <net code="5" name="unconnected-(U1-Pad3)">
+      <node ref="U1" pin="3" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="6" name="unconnected-(U1-Pad5)">
+      <node ref="U1" pin="5" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="7" name="unconnected-(U2-Pad3)">
+      <node ref="U2" pin="3" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="8" name="unconnected-(U2-Pad5)">
+      <node ref="U2" pin="5" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="9" name="unconnected-(U3-Pad3)">
+      <node ref="U3" pin="3" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="10" name="unconnected-(U3-Pad5)">
+      <node ref="U3" pin="5" pinfunction="GND" pintype="power_in"/>
+    </net>
+  </nets>
+</export>
