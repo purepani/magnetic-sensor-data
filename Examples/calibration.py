@@ -8,9 +8,13 @@ import numpy as np
 import pandas as pd
 import os
 import sys
+import signal
+
+import threading
 
 from Sensors import PIMSensor as Sensor
 
+from git import Repo
 
 class mean_tracker:
     def __init__(self, mean, num):
@@ -30,6 +34,22 @@ def move_printer(printer, x, y, z):
     command = f"G01 X{x} Y{y} Z{z}"
     print(command)
     printer.send(command)
+
+def git_push(path, message, foldername):
+    def signal_handler(signum, frame):
+        raise Exception("Git Push Timed Out.")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(120)
+    try:
+        repo = Repo(path)
+        repo.git.add(all=True)
+        repo.index.commit(message)
+        origin = repo.remote(name='origin')
+        origin.push()
+        return None 
+    except Exception as msg:
+        print(msg)
+        return None
 
 sensor = Sensor()
 
@@ -227,6 +247,8 @@ try:
         mean_times["z"].update_mean(end_z-start_z)
         estimated_z = mean_times["z"].mean*(total_z_samples-mean_times["z"].num)
         print_time(estimated_z, "z")
+        git_push("data/.git", f"Added the {z} slice to the {folder_name} test", folder_name)
+
 except:
     move_printer(printer, "0", "0", "0")
     raise
