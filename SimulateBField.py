@@ -285,7 +285,7 @@ def graph_B_field():
     plt.plot(z, Bz_axis)
     plt.show()
 def fit_data(file):
-    df = pd.read_csv(file)
+    df = pd.read_parquet(file)
     print(df)
     X = np.array(df.loc[:, "x":"z"]).T # unpacks to x, y, z
     Mx, My, Mz = np.array(df.loc[:, "Mx":"Mz"]).T
@@ -334,7 +334,7 @@ def fit_data_no_rot(df):
         
 
 def fit_z(file):
-    df = pd.read_csv(file)
+    df = pd.read_parquet(file)
     df_z = df[(df["x"]==-0.8) & (df["y"]==0.0)]
     z = df_z["z"]
     Bz = df_z["Mz"]
@@ -374,7 +374,7 @@ def interpolate_df(df):
 
 def poly_fit(folder, file_name="DataAvg.txt"): 
     file = f"{folder}/{file_name}"
-    df = pd.read_csv(file)
+    df = pd.read_parquet(file)
     #print(df)
     #X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
     #M = np.array(df.loc[:, "Mx":"Mz"])

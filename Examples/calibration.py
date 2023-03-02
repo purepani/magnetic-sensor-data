@@ -205,7 +205,7 @@ try:
                 print("Done")
 
                 data=pd.DataFrame(row_data,columns=columns)
-                data.to_csv(f"{folder_name}/{file_name}")
+                data.to_parquet(f"{folder_name}/{file_name}")
                 yprev  = y
                 end_y = time.time()
                 y_time = end_y - start_y
