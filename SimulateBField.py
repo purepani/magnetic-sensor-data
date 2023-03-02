@@ -1,7 +1,7 @@
 from os import wait
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import ellipk, ellipe, elliprf, elliprj 
+#from scipy.special import ellipk, ellipe, elliprf, elliprj 
 from scipy.integrate import quad
 from scipy.spatial.transform import Rotation 
 import scipy.optimize
@@ -319,8 +319,8 @@ def fit_z(file):
     plt.show()
 
 def poly_fit(folder, file_name="DataAvg.txt"): 
-    file = f"{folder}/{file_name}"
-    df = pd.read_csv(file)
+    f = f"{folder}/{file_name}"
+    df = pd.read_csv(f)
     print(df)
     X = np.array(df.loc[:, "x":"z"]) # unpacks to x, y, z
     M = np.array(df.loc[:, "Mx":"Mz"])
@@ -342,7 +342,7 @@ def poly_fit(folder, file_name="DataAvg.txt"):
     interpolator = LinearNDInterpolator(M, X)
 
     print(sys.getsizeof(interpolator))
-
+    
     with open(f'{folder}/calibration.pkl', 'wb') as file: 
        dill.dump(interpolator, file)   
 
@@ -398,7 +398,7 @@ def poly_fit(folder, file_name="DataAvg.txt"):
 
 
 if __name__== "__main__": 
-    #folder = input("Enter folder name: ")
-    #poly_fit(folder)
-    fit_data_no_rot("Examples/0.2mm-cal/DataAvg.txt") 
+    folder = input("Enter folder name: ")
+    poly_fit(folder)
+    #fit_data_no_rot("Examples/0.2mm-cal/DataAvg.txt") 
     #graph_B_field()

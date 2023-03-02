@@ -35,7 +35,7 @@ def get_stats_from_file(folder, file):
         data = pd.read_csv(f"{folder}/{file}")
     except:
         print(f"{folder}/{file} failed to read.") 
-    file = file.removesuffix(".data")
+    file = file.strip(".data")
     coord_str = file.split("_")
     coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
 

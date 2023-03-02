@@ -1,3 +1,0 @@
-,memory,steps,verbose,poly,linear,poly__degree,poly__include_bias,poly__interaction_only,poly__order,linear__copy_X,linear__fit_intercept,linear__n_jobs,linear__normalize,linear__positive
-0,,"('poly', PolynomialFeatures(degree=6))",False,PolynomialFeatures(degree=6),LinearRegression(fit_intercept=False),6,True,False,C,True,False,,deprecated,False
-1,,"('linear', LinearRegression(fit_intercept=False))",False,PolynomialFeatures(degree=6),LinearRegression(fit_intercept=False),6,True,False,C,True,False,,deprecated,False
