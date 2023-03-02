@@ -10,7 +10,6 @@ import os
 import sys
 import signal
 
-import threading
 
 from Sensors import PIMSensor as Sensor
 
@@ -35,13 +34,12 @@ def move_printer(printer, x, y, z):
     print(command)
     printer.send(command)
 
-def git_push(path, message, foldername):
+def git_push(repo, message, foldername):
     def signal_handler(signum, frame):
         raise Exception("Git Push Timed Out.")
     signal.signal(signal.SIGALRM, signal_handler)
     signal.alarm(120)
     try:
-        repo = Repo(path)
         repo.git.add(all=True)
         repo.index.commit(message)
         origin = repo.remote(name='origin')
@@ -49,7 +47,6 @@ def git_push(path, message, foldername):
         return None 
     except Exception as msg:
         print(msg)
-        return None
 
 sensor = Sensor()
 
@@ -157,6 +154,7 @@ if doManualEntry:
 
 SkipData = True if input("Skip data?(y/n): ")=="y" else False
 
+repo = Repo("./.git")
 try:
     if zlims[0]<0 or zlims[1]<0:
         raise ValueError("z lims can't be less than 0") 
@@ -166,6 +164,7 @@ except ValueError:
     sys.exit()
 try:
 
+    
     move_printer(printer, xlims[0], ylims[0], zlims[0])
 
 
@@ -247,7 +246,7 @@ try:
         mean_times["z"].update_mean(end_z-start_z)
         estimated_z = mean_times["z"].mean*(total_z_samples-mean_times["z"].num)
         print_time(estimated_z, "z")
-        git_push("./.git", f"Added the {z} slice to the {folder_name} test", folder_name)
+        git_push(repo, f"Added the {z} slice to the {folder_name} test", folder_name)
 
 except:
     move_printer(printer, "0", "0", "0")
