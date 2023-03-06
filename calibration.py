@@ -38,7 +38,7 @@ def git_push(repo, message, foldername):
     def signal_handler(signum, frame):
         raise Exception("Git Push Timed Out.")
     signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(120)
+    signal.alarm(920)
     try:
         repo.git.add(all=True)
         repo.index.commit(message)
