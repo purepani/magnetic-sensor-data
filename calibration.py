@@ -35,18 +35,11 @@ def move_printer(printer, x, y, z):
     printer.send(command)
 
 def git_push(repo, message, foldername):
-    def signal_handler(signum, frame):
-        raise Exception("Git Push Timed Out.")
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(920)
-    try:
-        repo.git.add(all=True)
-        repo.index.commit(message)
-        origin = repo.remote(name='origin')
-        origin.push()
-        return None 
-    except Exception as msg:
-        print(msg)
+    repo.git.add(all=True)
+    repo.index.commit(message)
+    origin = repo.remote(name='origin')
+    origin.push()
+    return None 
 
 sensor = Sensor()
 
