@@ -1,5 +1,8 @@
 unset shellHook
+PATH=${PATH:-}
 nix_saved_PATH="$PATH"
+XDG_DATA_DIRS=${XDG_DATA_DIRS:-}
+nix_saved_XDG_DATA_DIRS="$XDG_DATA_DIRS"
 AR='ar'
 export AR
 AS='as'
@@ -13,8 +16,6 @@ CXX='g++'
 export CXX
 DETERMINISTIC_BUILD='1'
 export DETERMINISTIC_BUILD
-EPOCHREALTIME='1651863915.929026'
-EPOCHSECONDS='1651863915'
 HOSTTYPE='x86_64'
 HOST_PATH='/nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/bin:/nix/store/hzi6fdch87l6hx9yyb6c3c2qbapczpg0-python3.9-numpy-1.21.5/bin:/nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/bin:/nix/store/plvyppzla7vk0qwyhmjn3z6rh87jvsgx-openblas-0.3.19/bin:/nix/store/gxnjg4vzalydwl3pc1m0aal72wbr1kzd-python3.9-dill-0.3.4/bin:/nix/store/grc5y1ixi57g527j44b5351svvq0s39l-pyright-1.1.219/bin:/nix/store/vq5d2d1s1hj8c60zzng3p7n74syld0v5-python3.9-mypy-0.931/bin:/nix/store/dj89pwrdlycn8iyn08v8znmynjz1zsi9-coreutils-9.0/bin:/nix/store/bdhm9wxl5mndc8pr5l6ab7a8pvcxi0jz-findutils-4.8.0/bin:/nix/store/6n2skcd82lmq6ncpvn5viw2zf2j95ibj-diffutils-3.8/bin:/nix/store/izkxjfa4vw8hj71nryw29iylansdj36m-gnused-4.8/bin:/nix/store/hcpp0sgqrdd8gc2fya3lf5yibk1n1a87-gnugrep-3.7/bin:/nix/store/aqnv5ay0wxl11bkfm9qp6l8qr2yg1zvq-gawk-5.1.1/bin:/nix/store/xpsby2ij67wc9jms5m3c8fd1jlsq9h0d-gnutar-1.34/bin:/nix/store/ix20p57nyz6hdcfbnbhxwsmdh8a2r6rh-gzip-1.11/bin:/nix/store/civp2i2znh80127yx3ic8q1xrwx9jjsr-bzip2-1.0.6.0.2-bin/bin:/nix/store/is8wg3j77z9ndpsvkm85sfbrlvvqd66l-gnumake-4.3/bin:/nix/store/4nmqxajzaf60yjribkgvj5j54x9yvr1r-bash-5.1-p12/bin:/nix/store/940bg5plrnh2zpmf7p7vyvs2annb4bda-patch-2.7.6/bin:/nix/store/qggprwbjq1hq7f7rd8jrl9jw4sj0wg3z-xz-5.2.5-bin/bin'
 export HOST_PATH
@@ -24,19 +25,19 @@ IN_NIX_SHELL='impure'
 export IN_NIX_SHELL
 LD='ld'
 export LD
-LINENO='73'
+LINENO='76'
 MACHTYPE='x86_64-pc-linux-gnu'
 NIX_BINTOOLS='/nix/store/fwcjqi04xx8hyq45d7dfag5mnhfsxxr6-binutils-wrapper-2.35.2'
 export NIX_BINTOOLS
 NIX_BINTOOLS_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu='1'
 export NIX_BINTOOLS_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu
-NIX_BUILD_CORES='8'
+NIX_BUILD_CORES='16'
 export NIX_BUILD_CORES
 NIX_CC='/nix/store/pja9g36cy32z3d51942jqk91a6l2d5nv-gcc-wrapper-10.3.0'
 export NIX_CC
 NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu='1'
 export NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu
-NIX_CFLAGS_COMPILE=' -frandom-seed=3465qdd0lr -isystem /nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/include -isystem /nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/include -isystem /nix/store/644hjvdw9l7fnbax4hsqbz88az4pqzfa-openblas-0.3.19-dev/include -isystem /nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/include -isystem /nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/include -isystem /nix/store/644hjvdw9l7fnbax4hsqbz88az4pqzfa-openblas-0.3.19-dev/include'
+NIX_CFLAGS_COMPILE=' -frandom-seed=nvdw8ibwnx -isystem /nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/include -isystem /nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/include -isystem /nix/store/644hjvdw9l7fnbax4hsqbz88az4pqzfa-openblas-0.3.19-dev/include -isystem /nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/include -isystem /nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/include -isystem /nix/store/644hjvdw9l7fnbax4hsqbz88az4pqzfa-openblas-0.3.19-dev/include'
 export NIX_CFLAGS_COMPILE
 NIX_ENFORCE_NO_NATIVE='1'
 export NIX_ENFORCE_NO_NATIVE
@@ -44,7 +45,7 @@ NIX_HARDENING_ENABLE='fortify stackprotector pic strictoverflow format relro bin
 export NIX_HARDENING_ENABLE
 NIX_INDENT_MAKE='1'
 export NIX_INDENT_MAKE
-NIX_LDFLAGS='-rpath /home/satwik/Documents/Research/MagneticSensorTracking/outputs/out/lib64 -rpath /home/satwik/Documents/Research/MagneticSensorTracking/outputs/out/lib  -L/nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/lib -L/nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/lib -L/nix/store/plvyppzla7vk0qwyhmjn3z6rh87jvsgx-openblas-0.3.19/lib -L/nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/lib -L/nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/lib -L/nix/store/plvyppzla7vk0qwyhmjn3z6rh87jvsgx-openblas-0.3.19/lib'
+NIX_LDFLAGS='-rpath /home/nixos/Projects/MagneticSensorTracking/outputs/out/lib64 -rpath /home/nixos/Projects/MagneticSensorTracking/outputs/out/lib  -L/nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/lib -L/nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/lib -L/nix/store/plvyppzla7vk0qwyhmjn3z6rh87jvsgx-openblas-0.3.19/lib -L/nix/store/rlghxlnfnlillc2abc4dm0xk1zamd2rk-python3-3.9.10-env/lib -L/nix/store/afi0ysqw20yiiw2gr2d28dx40bc4ddf8-python3-3.9.10/lib -L/nix/store/plvyppzla7vk0qwyhmjn3z6rh87jvsgx-openblas-0.3.19/lib'
 export NIX_LDFLAGS
 NIX_LIB64_IN_SELF_RPATH='1'
 NIX_NO_SELF_RPATH='1'
@@ -73,8 +74,6 @@ RANLIB='ranlib'
 export RANLIB
 READELF='readelf'
 export READELF
-SHELL='/nix/store/4nmqxajzaf60yjribkgvj5j54x9yvr1r-bash-5.1-p12/bin/bash'
-export SHELL
 SIZE='size'
 export SIZE
 SOURCE_DATE_EPOCH='315532800'
@@ -135,13 +134,13 @@ declare -a envHostHostHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' 'a
 declare -a envHostTargetHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' 'addPythonPath' 'sysconfigdataHook' )
 declare -a envTargetTargetHooks=()
 declare -a fixupOutputHooks=('if [ -z "${dontPatchELF-}" ]; then patchELF "$prefix"; fi' '_makeSymlinksRelative' 'if [ -z "${dontGzipMan-}" ]; then compressManPages "$prefix"; fi' '_doStrip' 'patchShebangsAuto' '_pruneLibtoolFiles' 'if [[ -z "${noAuditTmpdir-}" && -e "$prefix" ]]; then auditTmpdir "$prefix"; fi' '_moveSystemdUserUnits' '_moveSbin' '_moveLib64' )
-guess='8'
+guess='16'
 initialPath='/nix/store/dj89pwrdlycn8iyn08v8znmynjz1zsi9-coreutils-9.0 /nix/store/bdhm9wxl5mndc8pr5l6ab7a8pvcxi0jz-findutils-4.8.0 /nix/store/6n2skcd82lmq6ncpvn5viw2zf2j95ibj-diffutils-3.8 /nix/store/izkxjfa4vw8hj71nryw29iylansdj36m-gnused-4.8 /nix/store/hcpp0sgqrdd8gc2fya3lf5yibk1n1a87-gnugrep-3.7 /nix/store/aqnv5ay0wxl11bkfm9qp6l8qr2yg1zvq-gawk-5.1.1 /nix/store/xpsby2ij67wc9jms5m3c8fd1jlsq9h0d-gnutar-1.34 /nix/store/ix20p57nyz6hdcfbnbhxwsmdh8a2r6rh-gzip-1.11 /nix/store/civp2i2znh80127yx3ic8q1xrwx9jjsr-bzip2-1.0.6.0.2-bin /nix/store/is8wg3j77z9ndpsvkm85sfbrlvvqd66l-gnumake-4.3 /nix/store/4nmqxajzaf60yjribkgvj5j54x9yvr1r-bash-5.1-p12 /nix/store/940bg5plrnh2zpmf7p7vyvs2annb4bda-patch-2.7.6 /nix/store/qggprwbjq1hq7f7rd8jrl9jw4sj0wg3z-xz-5.2.5-bin'
-name='nix-shell'
+name='nix-shell-env'
 export name
 nativeBuildInputs=''
 export nativeBuildInputs
-out='/home/satwik/Documents/Research/MagneticSensorTracking/outputs/out'
+out='/home/nixos/Projects/MagneticSensorTracking/outputs/out'
 export out
 outputBin='out'
 outputDev='out'
@@ -169,7 +168,7 @@ declare -a postFixupHooks=('_multioutPropagateDev' )
 declare -a postUnpackHooks=('_updateSourceDateEpochFromSourceRoot' )
 declare -a preConfigureHooks=('_multioutConfig' )
 declare -a preFixupHooks=('_moveToShare' '_multioutDocs' '_multioutDevs' )
-prefix='/home/satwik/Documents/Research/MagneticSensorTracking/outputs/out'
+prefix='/home/nixos/Projects/MagneticSensorTracking/outputs/out'
 declare -a propagatedBuildDepFiles=('propagated-build-build-deps' 'propagated-native-build-inputs' 'propagated-build-target-deps' )
 propagatedBuildInputs=''
 export propagatedBuildInputs
@@ -1660,6 +1659,7 @@ updateSourceDateEpoch ()
     fi
 }
 PATH="$PATH:$nix_saved_PATH"
+XDG_DATA_DIRS="$XDG_DATA_DIRS:$nix_saved_XDG_DATA_DIRS"
 export NIX_BUILD_TOP="$(mktemp -d -t nix-shell.XXXXXX)"
 export TMP="$NIX_BUILD_TOP"
 export TMPDIR="$NIX_BUILD_TOP"
