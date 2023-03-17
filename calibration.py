@@ -41,7 +41,7 @@ def git_push(repo, message, foldername):
     origin.push()
     return None 
 
-sensor = Sensor()
+sensor = Sensor(0x1e)
 
 
 printer = printcore("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", 115200)
