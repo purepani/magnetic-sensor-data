@@ -52,6 +52,7 @@
           python39Packages.numpy
           python39Packages.scipy
           python39Packages.pandas
+          python39Packages.pysimplegui
           #python39Packages.jedi-language-server
           pkgs.nodePackages.pyright
           pkgs.mypy
