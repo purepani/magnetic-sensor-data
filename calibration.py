@@ -14,6 +14,9 @@ import signal
 from Sensors import PIMSensor as Sensor
 
 import git
+from github import Github
+
+ACCESS_TOKEN = input("Enter Temporary Access token: ")
 
 class mean_tracker:
     def __init__(self, mean, num):
@@ -58,6 +61,13 @@ repo = git.Repo("./.git")
 if folder_name not in repo.branches:
     repo.create_head(folder_name)
 repo.heads[folder_name].checkout()
+
+
+
+branch_ref = f"refs/remotes/origin/{folder_name}"
+if branch_ref in repo.git.ls_remote("--heads", "origin").splitlines():
+    # push the new branch and set upstream
+    repo.remote().pull(refspec=f"refs/heads/{branch_name}")
 
 
 last_val = 0xFFFF
@@ -272,4 +282,15 @@ except:
     raise
 
 move_printer(printer, "0", "0", "0")
+
+g = Github(access_token)
+repo_name = f"{repo.remotes.origin.url.split('/')[-2]}/{repo.remotes.origin.url.split('/')[-1].split('.')[0]}"
+github_repo = g.get_repo(repo_name)
+
+branch_name = folder_name
+event_type = "workflow-dispatch"
+input_payload = {f"folder_name": folder_name}
+
+github_repo.create_dispatch(event_type, input_payload, ref=f"refs/heads/{branch_name}")
+
 print("Done")

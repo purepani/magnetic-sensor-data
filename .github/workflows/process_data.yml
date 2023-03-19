@@ -3,8 +3,8 @@ name: Calibrate Processing
 on:
   workflow_dispatch:
     inputs:
-      input_value:
-        description: 'Input value for the calibrateprocessing.py script'
+      folder_name:
+        description: 'folder_name input for the calibrateprocessing.py script'
         required: true
         default: ""
 
