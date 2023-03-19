@@ -6,7 +6,6 @@
     flake-utils.url = "github:numtide/flake-utils";
      devenv.url = "github:cachix/devenv";
   };
-
   outputs = {
     self,
     nixpkgs,
@@ -23,7 +22,7 @@
         inherit inputs pkgs;
         modules = [
           ({pkgs, ...}: {
-            packages = [pkgs.zlib pkgs.python3];
+            packages = [pkgs.zlib pkgs.python3 pkgs.nodejs];
             languages.python = {
               enable = true;
               venv.enable = true;
@@ -32,6 +31,9 @@
             languages.typescript = {
               enable=true;
             };
+            enterShell = ''
+              export=PATH="$HOME/curvenote/dist"
+            '';
           })
         ];
       };

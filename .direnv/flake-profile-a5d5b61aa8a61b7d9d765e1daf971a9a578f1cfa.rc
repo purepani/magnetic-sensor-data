@@ -47,7 +47,7 @@ fi
 # https://github.com/numtide/devshell/issues/158
 PATH=${PATH#/path-not-set:}
 
-export DEVENV_PROFILE=/nix/store/fmrzv6civ497xf2lm4yz5mlj99n6gvp6-devenv-profile
+export DEVENV_PROFILE=/nix/store/1rn3dr01l0phijq6mi6lm778br0m25jq-devenv-profile
 
 # add installed packages to PATH
 export PATH="$DEVENV_PROFILE/bin:$PATH"
@@ -63,14 +63,16 @@ export XDG_DATA_DIRS="$DEVENV_PROFILE/share:${XDG_DATA_DIRS-}"
 export XDG_CONFIG_DIRS="$DEVENV_PROFILE/etc/xdg:${XDG_CONFIG_DIRS-}"
 
 export DEVENV_DOTFILE='\''/home/nixos/Projects/MagneticSensorTracking/.devenv'\''
-export DEVENV_PROFILE='\''/nix/store/fmrzv6civ497xf2lm4yz5mlj99n6gvp6-devenv-profile'\''
+export DEVENV_PROFILE='\''/nix/store/1rn3dr01l0phijq6mi6lm778br0m25jq-devenv-profile'\''
 export DEVENV_ROOT='\''/home/nixos/Projects/MagneticSensorTracking'\''
 export DEVENV_STATE='\''/home/nixos/Projects/MagneticSensorTracking/.devenv/state'\''
-export PYTHONPATH='\''/nix/store/fmrzv6civ497xf2lm4yz5mlj99n6gvp6-devenv-profile/lib/python3.10/site-packages'\''
+export PYTHONPATH='\''/nix/store/1rn3dr01l0phijq6mi6lm778br0m25jq-devenv-profile/lib/python3.10/site-packages'\''
 
-source /nix/store/v6ghkrmwn0kjmngvp5vgjwn98ch3dfdl-init-venv.sh
+source /nix/store/fxzfz33va809a6ms99d2g6a6chf84jbj-init-venv.sh
 
 source /nix/store/f0nyhjy53djw4gbj27dn97hywfn9c90b-init-poetry.sh
+
+export=PATH="$HOME/curvenote/dist"
 
 export PS1="\[\e[0;34m\](devenv)\[\e[0m\] ${PS1-}"
 
@@ -93,7 +95,7 @@ fi
 
 mkdir -p .devenv
 rm -f .devenv/profile
-ln -s /nix/store/fmrzv6civ497xf2lm4yz5mlj99n6gvp6-devenv-profile .devenv/profile
+ln -s /nix/store/1rn3dr01l0phijq6mi6lm778br0m25jq-devenv-profile .devenv/profile
 
 '
 export shellHook
