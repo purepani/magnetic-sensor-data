@@ -31,9 +31,7 @@
             languages.typescript = {
               enable=true;
             };
-            enterShell = ''
-              export=PATH="$HOME/curvenote/dist"
-            '';
+
           })
         ];
       };

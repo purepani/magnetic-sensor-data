@@ -72,8 +72,6 @@ source /nix/store/fxzfz33va809a6ms99d2g6a6chf84jbj-init-venv.sh
 
 source /nix/store/f0nyhjy53djw4gbj27dn97hywfn9c90b-init-poetry.sh
 
-export=PATH="$HOME/curvenote/dist"
-
 export PS1="\[\e[0;34m\](devenv)\[\e[0m\] ${PS1-}"
 
 # set path to locales on non-NixOS Linux hosts
