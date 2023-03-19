@@ -22,7 +22,7 @@
         inherit inputs pkgs;
         modules = [
           ({pkgs, ...}: {
-            packages = [pkgs.zlib pkgs.python3 pkgs.nodejs];
+            packages = [pkgs.zlib pkgs.python3 pkgs.nodejs pkgs.libgccjit];
             languages.python = {
               enable = true;
               venv.enable = true;
