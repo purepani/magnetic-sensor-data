@@ -1,12 +1,25 @@
 [tool.poetry]
 name = "magneticsensortracking"
 version = "0.1.0"
-description = "Measuring Patient Motion using Magnetic Sensors"
+description = "A magnetic sensor project for tracking patient motion"
 authors = ["purepani <pani0028@umn.edu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10.10"
+python = ">=3.10, <3.12"
+numpy = "^1.24.2"
+scipy = "^1.10.1"
+pandas = "^1.5.3"
+matplotlib = "^3.7.1"
+seaborn = "^0.12.2"
+dill = "^0.3.6"
+psutil = "^5.9.4"
+einops = "^0.6.0"
+jupyter = "^1.0.0"
+scikit-learn = "^1.2.2"
+
+[tool.poetry.group.dev.dependencies]
+python = ">=3.10, <3.12"
 numpy = "^1.24.2"
 scipy = "^1.10.1"
 pandas = "^1.5.3"
