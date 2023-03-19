@@ -15,24 +15,15 @@
     ...
   } @inputs:
     flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      customOverrides = self: super: {
-        # Overrides go here
-      };
-
+      pkgs = import nixpkgs {};
 
       packageName = "MagneticHeadTracking";
     in {
-      #        packages.${packageName} = app;
-
-      #        defaultPackage = self.packages.${system}.${packageName};
-      #        python.withPackages (ps: [ps.numpy ps.scipy ps.pandas])
       devShell = devenv.lib.mkShell {
         inherit inputs pkgs;
         modules = [
           ({pkgs, ...}: {
-            packages = [pkgs.zlib];
+            packages = [pkgs.zlib pkgs.python3];
             languages.python = {
               enable = true;
               venv.enable = true;
@@ -41,10 +32,8 @@
             languages.typescript = {
               enable=true;
             };
-
           })
         ];
-          #(python3.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn ps.einops ps.psutil ps.notebook ps.dill ps.scikit-learn]))];
       };
     });
 }
