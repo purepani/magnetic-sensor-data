@@ -2,15 +2,18 @@
   description = "Moment Reconstruction of Image";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+     devenv.url = "github:cachix/devenv";
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-  }:
+    devenv, 
+    ...
+  } @inputs:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
 
@@ -18,22 +21,6 @@
         # Overrides go here
       };
 
-      python = let
-        packageOverrides = self: super: {
-          scipy = super.scipy.overridePythonAttrs (old: rec {
-            version = "1.8.0";
-            src = super.fetchPypi {
-              pname = "scipy";
-              inherit version;
-              sha256 = "MdTy1rckvJqY5Se1hJuKflib8epjDDOqVj7akSyf8L0=";
-            };
-          });
-        };
-      in
-        pkgs.python3.override {
-          inherit packageOverrides;
-          self = python;
-        };
 
       packageName = "MagneticHeadTracking";
     in {
@@ -41,23 +28,23 @@
 
       #        defaultPackage = self.packages.${system}.${packageName};
       #        python.withPackages (ps: [ps.numpy ps.scipy ps.pandas])
-      devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          (python.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn]))
-          python39Packages.scikit-learn
-          python39Packages.einops
-          python39Packages.psutil
-          python39Packages.dill
-          python39Packages.notebook
-          python39Packages.numpy
-          python39Packages.scipy
-          python39Packages.pandas
-          python39Packages.pysimplegui
-          #python39Packages.jedi-language-server
-          pkgs.nodePackages.pyright
-          pkgs.mypy
+      devShell = devenv.lib.mkShell {
+        inherit inputs pkgs;
+        modules = [
+          ({pkgs, ...}: {
+            packages = [pkgs.zlib];
+            languages.python = {
+              enable = true;
+              venv.enable = true;
+              poetry.enable = true;
+            };
+            languages.typescript = {
+              enable=true;
+            };
+
+          })
         ];
-        #          inputsFrom = builtins.attrValues self.packages.${system};
+          #(python3.withPackages (ps: [ps.numpy ps.scipy ps.pandas ps.matplotlib ps.seaborn ps.einops ps.psutil ps.notebook ps.dill ps.scikit-learn]))];
       };
     });
 }
