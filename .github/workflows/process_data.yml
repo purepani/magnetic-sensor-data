@@ -6,7 +6,7 @@ on:
       input_value:
         description: 'Input value for the calibrateprocessing.py script'
         required: true
-        default: ''
+        default: ""
 
 jobs:
   run_script:
