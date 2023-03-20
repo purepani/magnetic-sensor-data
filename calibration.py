@@ -13,7 +13,10 @@ import signal
 
 from Sensors import PIMSensor as Sensor
 
-from git import Repo
+import git
+from github import Github
+
+ACCESS_TOKEN = input("Enter Temporary Access token: ")
 
 class mean_tracker:
     def __init__(self, mean, num):
@@ -52,6 +55,19 @@ while not printer.online:
     pass
 print("Connected")
 
+
+
+repo = git.Repo("./.git")
+if folder_name not in repo.branches:
+    repo.create_head(folder_name)
+repo.heads[folder_name].checkout()
+
+
+
+branch_ref = f"refs/remotes/origin/{folder_name}"
+if branch_ref in repo.git.ls_remote("--heads", "origin").splitlines():
+    # push the new branch and set upstream
+    repo.remote().pull(refspec=f"refs/heads/{branch_name}")
 
 
 last_val = 0xFFFF
@@ -147,7 +163,23 @@ if doManualEntry:
 
 SkipData = True if input("Skip data?(y/n): ")=="y" else False
 
-repo = Repo("./.git")
+
+
+
+
+    # check if the branch exists in the remote repository
+branch_ref = f"refs/remotes/origin/{folder_name}"
+if branch_ref not in repo.git.ls_remote("--heads", "origin").splitlines():
+    # push the new branch and set upstream
+    repo.remote().push(refspec=f"refs/heads/{branch_name}", set_upstream=True)
+else:
+    # push the new branch without setting upstream
+    repo.remote().push(refspec=f"refs/heads/{branch_name}")
+
+
+
+
+
 try:
     if zlims[0]<0 or zlims[1]<0:
         raise ValueError("z lims can't be less than 0") 
@@ -239,11 +271,26 @@ try:
         mean_times["z"].update_mean(end_z-start_z)
         estimated_z = mean_times["z"].mean*(total_z_samples-mean_times["z"].num)
         print_time(estimated_z, "z")
-        git_push(repo, f"Added the {z} slice to the {folder_name} test", folder_name)
+        try:
+            git_push(repo, f"Added the {z} slice to the {folder_name} test", folder_name)
+        except:
+            print(f"Failed to push the {z} slice to the {folder_name} test")
+        
 
 except:
     move_printer(printer, "0", "0", "0")
     raise
 
 move_printer(printer, "0", "0", "0")
+
+g = Github(access_token)
+repo_name = f"{repo.remotes.origin.url.split('/')[-2]}/{repo.remotes.origin.url.split('/')[-1].split('.')[0]}"
+github_repo = g.get_repo(repo_name)
+
+branch_name = folder_name
+event_type = "workflow-dispatch"
+input_payload = {f"folder_name": folder_name}
+
+github_repo.create_dispatch(event_type, input_payload, ref=f"refs/heads/{branch_name}")
+
 print("Done")
