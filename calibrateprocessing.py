@@ -78,7 +78,7 @@ def read_data(folder, files, position_labels, name = "DataAvg.txt"):
 if os.path.exists(f"{folder}/{file_name}"): 
     df = pd.read_csv(f"{folder}/{file_name}") 
 else:
-    print(filesde)
+    print(files)
     df = read_data(folder, files, position_labels, file_name)
 
 print(df)
