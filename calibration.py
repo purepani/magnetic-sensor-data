@@ -285,10 +285,7 @@ except:
 move_printer(printer, "0", "0", "0")
 repo.git.checkout("main")
 g = Github(ACCESS_TOKEN)
-repo_name = f"{repo.remotes.origin.url.split('/')[-2]}/{repo.remotes.origin.url.split('/')[-1].split('.')[0]}".split("@")
-repo_name[0]="https://"
-repo_name[1] = repo_name[1].replace(":", "/")
-repo_name = "".join(repo_name)
+repo_name = f"{repo.remotes.origin.url.split('/')[-2]}/{repo.remotes.origin.url.split('/')[-1].split('.')[0]}".split(":")[1]
 
 print(repo_name)
 github_repo = g.get_repo(repo_name)
