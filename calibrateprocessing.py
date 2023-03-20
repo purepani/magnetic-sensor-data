@@ -42,7 +42,7 @@ magnetic_labels = ["Mx", "My", "Mz"]
 position_labels = ["x", "y", "z"]
 def get_stats_from_file(folder, file):
     position_labels = ["x", "y", "z"]
-    #print(f"{folder}/{file}")
+    print(f"{folder}/{file}")
     try:
         data = pd.read_parquet(f"{folder}/{file}")
     except:
