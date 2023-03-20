@@ -155,4 +155,3 @@ if not check_cli_args:
     Bz = df_z["Mz"]
     #plt.plot(z, Bz, "bo")
     #plt.show()
-
