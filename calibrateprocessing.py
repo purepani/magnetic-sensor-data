@@ -33,6 +33,7 @@ else:
 files = os.listdir(folder)
 files.remove("info.txt")
 file_name = "DataAvg.txt"
+print(folder)
 print(f"There are {len(files)} files to parse.")
 
 
@@ -42,11 +43,12 @@ magnetic_labels = ["Mx", "My", "Mz"]
 position_labels = ["x", "y", "z"]
 def get_stats_from_file(folder, file):
     position_labels = ["x", "y", "z"]
-    print(f"{folder}/{file}")
+    #print(f"{folder}/{file}")
     try:
         data = pd.read_parquet(f"{folder}/{file}")
-    except:
-        print(f"{folder}/{file} failed to read.") 
+    except Exception as e:
+        print(f"{folder}/{file} failed to read.")
+        print(e)
     file = file.strip(".data")
     coord_str = file.split("_")
     coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
@@ -78,12 +80,13 @@ def read_data(folder, files, position_labels, name = "DataAvg.txt"):
 if os.path.exists(f"{folder}/{file_name}"): 
     df = pd.read_csv(f"{folder}/{file_name}") 
 else:
+    print(get_stats_from_file(folder, files[5]))
     df = read_data(folder, files, position_labels, file_name)
 
 print(df)
 
 
-if check_cli_args:
+if not check_cli_args:
     print(f"The valid values of the axes are: {position_labels}")
     axis = input("Enter axis: ")
     while(not axis in position_labels):
@@ -152,4 +155,3 @@ if check_cli_args:
     Bz = df_z["Mz"]
     #plt.plot(z, Bz, "bo")
     #plt.show()
-
