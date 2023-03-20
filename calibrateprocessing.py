@@ -46,8 +46,9 @@ def get_stats_from_file(folder, file):
     #print(f"{folder}/{file}")
     try:
         data = pd.read_parquet(f"{folder}/{file}")
-    except:
-        print(f"{folder}/{file} failed to read.") 
+    except Exception as e:
+        print(f"{folder}/{file} failed to read.")
+        print(e)
     file = file.strip(".data")
     coord_str = file.split("_")
     coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
