@@ -7,14 +7,16 @@ from functools import partial
 import sys
 
 
-check_cli_args = len(sys)>1
+check_cli_args = len(sys.argv)>1
+print(check_cli_args)
 
 if not check_cli_args:
-    import matplotlib.pyplot as plt
-    import pylab as plt
-    import seaborn as sns
-    from matplotlib.colors import LogNorm
-    from mpl_toolkits.mplot3d import axes3d
+    pass
+    #import matplotlib.pyplot as plt
+    #import pylab as plt
+    #import seaborn as sns
+    #from matplotlib.colors import LogNorm
+    #from mpl_toolkits.mplot3d import axes3d
 
 
 def get_stats(data):
@@ -31,6 +33,7 @@ else:
 files = os.listdir(folder)
 files.remove("info.txt")
 file_name = "DataAvg.txt"
+print(folder)
 print(f"There are {len(files)} files to parse.")
 
 
@@ -43,8 +46,9 @@ def get_stats_from_file(folder, file):
     #print(f"{folder}/{file}")
     try:
         data = pd.read_parquet(f"{folder}/{file}")
-    except:
-        print(f"{folder}/{file} failed to read.") 
+    except Exception as e:
+        print(f"{folder}/{file} failed to read.")
+        print(e)
     file = file.strip(".data")
     coord_str = file.split("_")
     coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
@@ -76,12 +80,13 @@ def read_data(folder, files, position_labels, name = "DataAvg.txt"):
 if os.path.exists(f"{folder}/{file_name}"): 
     df = pd.read_csv(f"{folder}/{file_name}") 
 else:
+    print(get_stats_from_file(folder, files[5]))
     df = read_data(folder, files, position_labels, file_name)
 
 print(df)
 
 
-if check_cli_args:
+if not check_cli_args:
     print(f"The valid values of the axes are: {position_labels}")
     axis = input("Enter axis: ")
     while(not axis in position_labels):
@@ -105,21 +110,21 @@ if check_cli_args:
 
 
 
-    fig, axs = plt.subplots(1, 3)
-    new_labels = position_labels.copy()
-    new_labels.remove(axis)
+    #fig, axs = plt.subplots(1, 3)
+    #new_labels = position_labels.copy()
+    #new_labels.remove(axis)
 
     for i in range(1):
         for j in range(3):
-            ax = axs[j]
+            #ax = axs[j]
             M = magnetic_labels[j]
             pos = position_labels[j]
             plane_data = df_z.pivot(columns=new_labels[0], index = new_labels[1], values = M).sort_index(axis=0).sort_index(axis=1)
-            sns.heatmap(plane_data, ax=ax)
-            ax.set_xlabel(new_labels[0])
-            ax.set_ylabel(new_labels[1])
-            ax.set_title(M)
-    plt.show()
+            #sns.heatmap(plane_data, ax=ax)
+            #ax.set_xlabel(new_labels[0])
+            #ax.set_ylabel(new_labels[1])
+            #ax.set_title(M)
+    #plt.show()
 
     step = int(input("Enter step for vector field: "))
 
@@ -135,11 +140,11 @@ if check_cli_args:
     #looks cool
     #plt.quiver(x, y, Mxlog, Mylog, Mnorm, cmap=colormap, scale=50)
 
-    plt.quiver(x, y, Mxlog, Mylog, Mz, cmap=colormap, scale=100)
-    plt.colorbar()
-    plt.ylabel("y")
-    plt.xlabel("x")
-    plt.show()
+    #plt.quiver(x, y, Mxlog, Mylog, Mz, cmap=colormap, scale=100)
+    #plt.colorbar()
+    #plt.ylabel("y")
+    #plt.xlabel("x")
+    #plt.show()
 
 
 
@@ -148,6 +153,5 @@ if check_cli_args:
     df_z.sort_values(by= ['z', 'y', 'x']) 
     z = df_z["z"]
     Bz = df_z["Mz"]
-    plt.plot(z, Bz, "bo")
-    plt.show()
-
+    #plt.plot(z, Bz, "bo")
+    #plt.show()
