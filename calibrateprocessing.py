@@ -33,6 +33,7 @@ else:
 files = os.listdir(folder)
 files.remove("info.txt")
 file_name = "DataAvg.txt"
+print(folder)
 print(f"There are {len(files)} files to parse.")
 
 
