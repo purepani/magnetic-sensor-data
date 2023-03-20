@@ -8,13 +8,15 @@ import sys
 
 
 check_cli_args = len(sys.argv)>1
+print(check_cli_args)
 
 if not check_cli_args:
-    import matplotlib.pyplot as plt
-    import pylab as plt
-    import seaborn as sns
-    from matplotlib.colors import LogNorm
-    from mpl_toolkits.mplot3d import axes3d
+    pass
+    #import matplotlib.pyplot as plt
+    #import pylab as plt
+    #import seaborn as sns
+    #from matplotlib.colors import LogNorm
+    #from mpl_toolkits.mplot3d import axes3d
 
 
 def get_stats(data):
@@ -105,21 +107,21 @@ if check_cli_args:
 
 
 
-    fig, axs = plt.subplots(1, 3)
-    new_labels = position_labels.copy()
-    new_labels.remove(axis)
+    #fig, axs = plt.subplots(1, 3)
+    #new_labels = position_labels.copy()
+    #new_labels.remove(axis)
 
     for i in range(1):
         for j in range(3):
-            ax = axs[j]
+            #ax = axs[j]
             M = magnetic_labels[j]
             pos = position_labels[j]
             plane_data = df_z.pivot(columns=new_labels[0], index = new_labels[1], values = M).sort_index(axis=0).sort_index(axis=1)
-            sns.heatmap(plane_data, ax=ax)
-            ax.set_xlabel(new_labels[0])
-            ax.set_ylabel(new_labels[1])
-            ax.set_title(M)
-    plt.show()
+            #sns.heatmap(plane_data, ax=ax)
+            #ax.set_xlabel(new_labels[0])
+            #ax.set_ylabel(new_labels[1])
+            #ax.set_title(M)
+    #plt.show()
 
     step = int(input("Enter step for vector field: "))
 
@@ -135,11 +137,11 @@ if check_cli_args:
     #looks cool
     #plt.quiver(x, y, Mxlog, Mylog, Mnorm, cmap=colormap, scale=50)
 
-    plt.quiver(x, y, Mxlog, Mylog, Mz, cmap=colormap, scale=100)
-    plt.colorbar()
-    plt.ylabel("y")
-    plt.xlabel("x")
-    plt.show()
+    #plt.quiver(x, y, Mxlog, Mylog, Mz, cmap=colormap, scale=100)
+    #plt.colorbar()
+    #plt.ylabel("y")
+    #plt.xlabel("x")
+    #plt.show()
 
 
 
@@ -148,6 +150,6 @@ if check_cli_args:
     df_z.sort_values(by= ['z', 'y', 'x']) 
     z = df_z["z"]
     Bz = df_z["Mz"]
-    plt.plot(z, Bz, "bo")
-    plt.show()
+    #plt.plot(z, Bz, "bo")
+    #plt.show()
 
