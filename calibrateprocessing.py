@@ -86,7 +86,7 @@ else:
 print(df)
 
 
-if check_cli_args:
+if not check_cli_args:
     print(f"The valid values of the axes are: {position_labels}")
     axis = input("Enter axis: ")
     while(not axis in position_labels):
