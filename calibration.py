@@ -58,6 +58,8 @@ print("Connected")
 
 
 repo = git.Repo("./.git")
+folder_name=input("Enter Folder name:" )
+
 if folder_name not in repo.branches:
     repo.create_head(folder_name)
 repo.heads[folder_name].checkout()
@@ -67,14 +69,13 @@ repo.heads[folder_name].checkout()
 branch_ref = f"refs/remotes/origin/{folder_name}"
 if branch_ref in repo.git.ls_remote("--heads", "origin").splitlines():
     # push the new branch and set upstream
-    repo.remote().pull(refspec=f"refs/heads/{branch_name}")
+    repo.remote().pull(refspec=f"refs/heads/{folder_name}")
 
 
 last_val = 0xFFFF
 
 
 
-folder_name=input("Enter Folder name:" )
 if not os.path.exists(folder_name):
     os.makedirs(folder_name)
 
@@ -171,10 +172,10 @@ SkipData = True if input("Skip data?(y/n): ")=="y" else False
 branch_ref = f"refs/remotes/origin/{folder_name}"
 if branch_ref not in repo.git.ls_remote("--heads", "origin").splitlines():
     # push the new branch and set upstream
-    repo.remote().push(refspec=f"refs/heads/{branch_name}", set_upstream=True)
+    repo.remote().push(refspec=f"refs/heads/{folder_name}", set_upstream=True)
 else:
     # push the new branch without setting upstream
-    repo.remote().push(refspec=f"refs/heads/{branch_name}")
+    repo.remote().push(refspec=f"refs/heads/{folder_name}")
 
 
 
@@ -282,7 +283,7 @@ except:
     raise
 
 move_printer(printer, "0", "0", "0")
-
+repo.git.checkout("main")
 g = Github(access_token)
 repo_name = f"{repo.remotes.origin.url.split('/')[-2]}/{repo.remotes.origin.url.split('/')[-1].split('.')[0]}"
 github_repo = g.get_repo(repo_name)
