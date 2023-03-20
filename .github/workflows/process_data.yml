@@ -28,7 +28,7 @@ jobs:
 
     - name: Run calibrateprocessing.py
       run: |
-        python calibrateprocessing.py ${{ github.event.inputs.folder_name }}
+        python calibrateprocessing.py $GITHUB_WORKSPACE/${{ github.event.inputs.folder_name }}
 
     - name: Configure Git
       run: |
