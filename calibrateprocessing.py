@@ -7,7 +7,7 @@ from functools import partial
 import sys
 
 
-check_cli_args = len(sys)>1
+check_cli_args = len(sys.argv)>1
 
 if not check_cli_args:
     import matplotlib.pyplot as plt
