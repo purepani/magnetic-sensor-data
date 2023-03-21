@@ -291,9 +291,8 @@ print(repo_name)
 github_repo = g.get_repo(repo_name)
 
 branch_name = folder_name
-event_type = "workflow-dispatch"
 input_payload = {f"folder_name": folder_name}
 
-github_repo.get_workflow("Calibrate Processing").create_dispatch(event_type, input_payload, ref=f"refs/heads/{branch_name}")
+github_repo.get_workflow("Calibrate Processing").create_dispatch(input_payload, ref=f"refs/heads/{branch_name}")
 
 print("Done")
