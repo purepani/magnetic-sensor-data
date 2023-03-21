@@ -293,6 +293,6 @@ github_repo = g.get_repo(repo_name)
 branch_name = folder_name
 input_payload = {f"folder_name": folder_name}
 
-github_repo.get_workflows()[0].create_dispatch(input_payload, ref=f"refs/heads/{branch_name}")
+github_repo.get_workflows()[0].create_dispatch(f"refs/heads/{branch_name}", inputs=input_payload)
 
 print("Done")
