@@ -17,4 +17,4 @@ class PIMSensor:
     
     def get_magnetometer(self): #return tuple
         x, y, z = self.sensor.magnetometer()
-        return x, y, z
+        return x/10, y/10, z/10
