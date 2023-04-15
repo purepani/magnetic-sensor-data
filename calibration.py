@@ -237,7 +237,7 @@ try:
                 print(f"Pausing for {sleep_time} seconds.")
                 time.sleep(sleep_time)
 
-                row_data=np.zeros((samples_per_measurment, len(sensors), 3))
+                row_data=np.zeros((samples_per_measurement, len(sensors), 3))
 
 
                 for i in range(samples_per_measurement):
