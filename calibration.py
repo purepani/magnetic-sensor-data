@@ -3,12 +3,12 @@
 from printrun.printcore import printcore
 import time
 from time import sleep
-import board
 import numpy as np
 import pandas as pd
 import os
 import sys
 import signal
+import einops as eo
 
 
 from Sensors import PIMSensor as Sensor
@@ -45,7 +45,8 @@ def git_push(repo, message, foldername):
     return None 
 
 sensor = Sensor(0x1e)
-
+sensors = [Sensor(0x1d, i2c_dev=1), Sensor(0x1e, i2c_dev=5), Sensor(0x1e, i2c_dev=1), Sensor(0x1d, i2c_dev=5)]
+sensor_positions = np.array([[0, 0, 0], [35, 0, 0], [0, 35, 0], [35, 35, 0]])
 
 printer = printcore("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", 115200)
 
@@ -88,7 +89,10 @@ min_time_between_samples = 0.01
 column_categories = ['Magnetometer']
 #columns = ['SampleID'] + [x+f'{coordinate}' for x in column_categories for coordinate in ['x','y','z']] 
 
-columns = [x+f'{coordinate}' for x in column_categories for coordinate in ['x','y','z']] 
+columns = ["Sensor Position"]+[x+f'{coordinate}' for x in column_categories for coordinate in ['x','y','z']] 
+
+
+
 for x in columns:
     print(x)
 
@@ -233,23 +237,40 @@ try:
                 print(f"Pausing for {sleep_time} seconds.")
                 time.sleep(sleep_time)
 
-                row_data=[]
+                row_data=np.zeros((samples_per_measurment, len(sensors), 3))
+
+
                 for i in range(samples_per_measurement):
                     try:
-                        Bx, By, Bz = sensor.get_magnetometer()
+                        B = np.array([sensor.get_magnetometer() for sensor in sensors])
                         #tlv493d.update_data()
                         #Bx = tlv493d.get_x()
                         #By = tlv493d.get_y()
                         #Bz = tlv493d.get_z()
-                        row_data.append([Bx, By, Bz]) 
+                        row_data[i]=B
                         time.sleep(min_time_between_samples)
                     except:
                         print("Measurement Failed")
                         sensor = Sensor()
                         print("Reconnected")
-                print("Done")
+                idx = pd.IndexSlice
+    
+                cols=pd.MultiIndex.from_product([np.array(["position", "Magnetometer"]), np.array(['x', 'y', 'z'])], names=["values, axis"])
+                ind=pd.MultiIndex.from_product([range(sensors), range(samples_per_measurement)], names=["Sensor", "Sample"])
+                data=pd.DataFrame(columns=cols, index=ind)
 
-                data=pd.DataFrame(row_data,columns=columns)
+
+                row_data = eo.rearrange(row_data, "samples sensors dim -> dim (sensors samples)")
+                
+                for i in range(len(sensors)):
+                    data.loc[idx[i, :] , ("Magnetometer", 'x')]=row_data[0]
+                    data.loc[idx[i, :], ("Magnetometer", 'y')]=row_data[1]
+                    data.loc[idx[i, :], ("Magnetometer", 'z')]=row_data[2]
+                    data.loc[idx[i, :] , ("position", 'x')] = sensor_positions[0]
+                    data.loc[idx[i, :] , ("position", 'y')] = sensor_positions[1]
+                    data.loc[idx[i, :] , ("position", 'z')] = sensor_positions[2]
+
+                print("Done")
                 data.to_parquet(f"{folder_name}/{file_name}")
                 yprev  = y
                 end_y = time.time()
