@@ -17,12 +17,11 @@ if not check_cli_args:
     #import seaborn as sns
     #from matplotlib.colors import LogNorm
     #from mpl_toolkits.mplot3d import axes3d
-
+idx = pd.IndexSlice
 
 def get_stats(data):
-    mag = data.loc[:,'Magnetometerx':'Magnetometerz'].set_axis(['Mx','My','Mz'],axis=1)
-    mag_avg = mag.mean() 
-    mag_std = mag.std()
+    mag_avg = data["Magnetometer"].groupby(level=["Sensor", "axis"]).mean() 
+    mag_std = data["Magnetometer"].groupby(level=["Sensor", "axis"]).std() 
     return mag_avg, mag_std
 
 
@@ -45,7 +44,7 @@ def get_stats_from_file(folder, file):
     position_labels = ["x", "y", "z"]
     #print(f"{folder}/{file}")
     try:
-        data = pd.read_parquet(f"{folder}/{file}")
+        data = pd.read_csv(f"{folder}/{file}")
     except Exception as e:
         print(f"{folder}/{file} failed to read.")
         print(e)
