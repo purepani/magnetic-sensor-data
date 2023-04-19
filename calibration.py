@@ -9,7 +9,7 @@ import os
 import sys
 import signal
 import einops as eo
-
+import tqdm
 
 from Sensors import PIMSensor as Sensor
 
