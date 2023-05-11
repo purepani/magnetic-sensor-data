@@ -256,7 +256,7 @@ try:
                 idx = pd.IndexSlice
     
                 cols=pd.MultiIndex.from_product([np.array(["position", "Magnetometer"]), np.array(['x', 'y', 'z'])], names=["values", "axis"])
-                ind=pd.MultiIndex.from_product([range(len(sensors)), range(samples_per_measurement)], names=["Sensor", "Sample"])
+                ind=pd.MultiIndex.from_product([range(sensors), range(samples_per_measurement)], names=["Sensor", "Sample"])
                 data=pd.DataFrame(columns=cols, index=ind)
 
 
