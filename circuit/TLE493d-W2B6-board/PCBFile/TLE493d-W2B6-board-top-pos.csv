@@ -1,0 +1,8 @@
+Designator,Val,Package,Mid X,Mid Y,Rotation,Layer
+C1,100nF,C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,114.3,-104.14,180,top
+J1,Conn_01x04,PinHeader_1x04_P2.54mm_Horizontal,114.125,-86.15,0,top
+R1,1.2kOhm,R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,121,-103,-90,top
+R2,1.2kOhm,R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,124,-98.9125,90,top
+U1,TLE493D,SOT-23-6,144,-90,0,top
+U2,TLE493D,SOT-23-6,132,-102,0,top
+U3,TLE493D,SOT-23-6,132,-79,0,top

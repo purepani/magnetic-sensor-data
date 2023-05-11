@@ -1,0 +1,5 @@
+"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref";
+1;"J1";"PinHeader_1x04_P2.54mm_Horizontal";1;"Conn_01x04";;;
+2;"U3,U1,U2";"SOT-23-6";3;"TLV493D";;;
+3;"R1,R2";"R_0603_1608Metric_Pad0.98x0.95mm_HandSolder";2;"1.2kOhm";;;
+4;"C1";"C_0603_1608Metric_Pad1.08x0.95mm_HandSolder";1;"100nF";;;
