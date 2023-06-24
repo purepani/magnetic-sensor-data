@@ -45,7 +45,7 @@ def get_stats_from_file(folder, file):
     position_labels = ["x", "y", "z"]
     #print(f"{folder}/{file}")
     try:
-        data = pd.read_parquet(f"{folder}/{file}")
+        data = pd.read_csv(f"{folder}/{file}")
     except Exception as e:
         print(f"{folder}/{file} failed to read.")
         print(e)
