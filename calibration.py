@@ -9,7 +9,7 @@ import os
 import sys
 import signal
 import einops as eo
-
+import tqdm
 
 from Sensors import PIMSensor as Sensor
 
@@ -46,7 +46,7 @@ def git_push(repo, message, foldername):
 
 sensor = Sensor(0x1e)
 sensors = [Sensor(0x1d, i2c_dev=1), Sensor(0x1e, i2c_dev=5), Sensor(0x1e, i2c_dev=1), Sensor(0x1d, i2c_dev=5)]
-sensor_positions = np.array([[0, 0, 0], [35, 0, 0], [0, 35, 0], [35, 35, 0]])
+sensor_positions = np.array([[0., 0., 0.], [35., 0., 0.], [0., 35., 0.], [35., 35., 0.]])
 
 printer = printcore("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", 115200)
 
@@ -255,23 +255,24 @@ try:
                         print("Reconnected")
                 idx = pd.IndexSlice
     
-                cols=pd.MultiIndex.from_product([np.array(["position", "Magnetometer"]), np.array(['x', 'y', 'z'])], names=["values, axis"])
-                ind=pd.MultiIndex.from_product([range(sensors), range(samples_per_measurement)], names=["Sensor", "Sample"])
+                cols=pd.MultiIndex.from_product([np.array(["Magnetometer"]), np.array(['x', 'y', 'z'])], names=["values", "axis"])
+                ind=pd.MultiIndex.from_product([range(len(sensors)),  range(samples_per_measurement)], names=["Sensor", "Sample"])
                 data=pd.DataFrame(columns=cols, index=ind)
 
 
-                row_data = eo.rearrange(row_data, "samples sensors dim -> dim (sensors samples)")
+                #row_data = eo.rearrange(row_data, "samples sensors dim -> dim (sensors samples)")
                 
                 for i in range(len(sensors)):
-                    data.loc[idx[i, :] , ("Magnetometer", 'x')]=row_data[0]
-                    data.loc[idx[i, :], ("Magnetometer", 'y')]=row_data[1]
-                    data.loc[idx[i, :], ("Magnetometer", 'z')]=row_data[2]
-                    data.loc[idx[i, :] , ("position", 'x')] = sensor_positions[0]
-                    data.loc[idx[i, :] , ("position", 'y')] = sensor_positions[1]
-                    data.loc[idx[i, :] , ("position", 'z')] = sensor_positions[2]
+                    data.loc[idx[i, :] , ("Magnetometer", 'x')]=row_data[:, i, 0]
+                    data.loc[idx[i, :], ("Magnetometer", 'y')]=row_data[:, i, 1]
+                    data.loc[idx[i, :], ("Magnetometer", 'z')]=row_data[:, i, 2]
+                    #data.loc[idx[i, :], ("position", 'x')] = sensor_positions[i, 0]
+                    #data.loc[idx[i, :], ("position", 'y')] = sensor_positions[i, 1]
+                    #data.loc[idx[i, :], ("position", 'z')] = sensor_positions[i, 2]
 
+                data = data.apply(pd.to_numeric)
                 print("Done")
-                data.to_parquet(f"{folder_name}/{file_name}")
+                data.to_csv(f"{folder_name}/{file_name}")
                 yprev  = y
                 end_y = time.time()
                 y_time = end_y - start_y

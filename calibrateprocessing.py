@@ -3,7 +3,7 @@ import numpy as np
 import multiprocessing as mp
 import os
 from functools import partial
-
+import tqdm
 import sys
 
 
@@ -17,19 +17,17 @@ if not check_cli_args:
     #import seaborn as sns
     #from matplotlib.colors import LogNorm
     #from mpl_toolkits.mplot3d import axes3d
-
+idx = pd.IndexSlice
 
 def get_stats(data):
-    mag = data.loc[:,'Magnetometerx':'Magnetometerz'].set_axis(['Mx','My','Mz'],axis=1)
-    mag_avg = mag.mean() 
-    mag_std = mag.std()
-    return mag_avg, mag_std
+    mag = data.groupby(pd.Grouper(level="Sensor"), level="axis").agg(["mean", "std"])
+    return mag
 
 
 if check_cli_args:
     folder = sys.argv[1]
 else:
-    folder = input("Enter folder with data: ").strip()
+    folder = "Experiments/data/PIM04142023"#input("Enter folder with data: ").strip()
 files = os.listdir(folder)
 files.remove("info.txt")
 file_name = "DataAvg.txt"
@@ -45,16 +43,17 @@ def get_stats_from_file(folder, file):
     position_labels = ["x", "y", "z"]
     #print(f"{folder}/{file}")
     try:
-        data = pd.read_parquet(f"{folder}/{file}")
+        data = pd.read_csv(f"{folder}/{file}", header=[0,1], index_col=[0,1])
     except Exception as e:
         print(f"{folder}/{file} failed to read.")
         print(e)
+        raise Exception
     file = file.strip(".data")
-    coord_str = file.split("_")
-    coord = {k:float(v) for k, v in zip(position_labels, coord_str)} 
+    coord = map(float, file.split("_"))
 
-    avg, std = get_stats(data)
-    return coord, avg, std
+    mag = get_stats(data)
+    mag[[("Magnet", i, "position") for i in position_labels]]=list(map(float, coord))
+    return mag
     #for pos in position_labels:
     #    data_dict[pos].append(coord[pos])
     #    data_dict[f"M{pos}"].append(avg[f"M{pos}"])
@@ -62,23 +61,26 @@ def get_stats_from_file(folder, file):
 
 def read_data(folder, files, position_labels, name = "DataAvg.txt"):
     i = 0
+    
+    #df = pd.DataFrame(columns=pd.)
     with mp.Pool(processes=mp.cpu_count()) as pool:
-        for coord, avg, std in pool.imap_unordered(partial(get_stats_from_file, folder), files):
-            for pos in position_labels:
-                data_dict[pos].append(coord[pos])
-                data_dict[f"M{pos}"].append(avg[f"M{pos}"])
-                data_dict[f"M{pos}_std"].append(std[f"M{pos}"])
-            i = i + 1
-            if i%100 == 0:
-                print(f"{i} files parsed.")
-            #del data
+        #data = pool.imap_unordered(partial(get_stats_from_file, folder), files)
+        data = tqdm.tqdm(pool.imap_unordered(partial(get_stats_from_file, folder), files), total=len(files))
+        df = pd.concat(data)
 
-    df = pd.DataFrame(data_dict)
+    #df = pd.DataFrame(columns=pd.MultiIndex.from_product([["position", "B"], ["x", "y", "z"]], names=["value", "axis"]))
+
+            #i = i + 1
+            #if i%100 == 0:
+                #print(f"{i} files parsed.")
+            #del data
+    
+    
     df.to_csv(f"{folder}/{name}")
     return df
 
 if os.path.exists(f"{folder}/{file_name}"): 
-    df = pd.read_csv(f"{folder}/{file_name}") 
+    df = pd.read_csv(f"{folder}/{file_name}", header=[0,1], index_col=[0,1]) 
 else:
     print(get_stats_from_file(folder, files[5]))
     df = read_data(folder, files, position_labels, file_name)
@@ -110,9 +112,10 @@ if not check_cli_args:
 
 
 
+
     #fig, axs = plt.subplots(1, 3)
-    #new_labels = position_labels.copy()
-    #new_labels.remove(axis)
+    new_labels = position_labels.copy()
+    new_labels.remove(axis)
 
     for i in range(1):
         for j in range(3):
