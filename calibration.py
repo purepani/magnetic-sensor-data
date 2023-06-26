@@ -254,7 +254,7 @@ try:
                         print("Reconnected")
                 idx = pd.IndexSlice
     
-                cols=pd.MultiIndex.from_product([np.array(["Magnetometer"]), np.array(['x', 'y', 'z'])], names=["values", "axis"])
+                cols=pd.MultiIndex.from_product([np.array(["Magnetometer", "position"]), np.array(['x', 'y', 'z'])], names=["values", "axis"])
                 ind=pd.MultiIndex.from_product([range(len(sensors)),  range(samples_per_measurement)], names=["Sensor", "Sample"])
                 data=pd.DataFrame(columns=cols, index=ind)
 
@@ -265,9 +265,9 @@ try:
                     data.loc[idx[i, :] , ("Magnetometer", 'x')]=row_data[:, i, 0]
                     data.loc[idx[i, :], ("Magnetometer", 'y')]=row_data[:, i, 1]
                     data.loc[idx[i, :], ("Magnetometer", 'z')]=row_data[:, i, 2]
-                    #data.loc[idx[i, :], ("position", 'x')] = sensor_positions[i, 0]
-                    #data.loc[idx[i, :], ("position", 'y')] = sensor_positions[i, 1]
-                    #data.loc[idx[i, :], ("position", 'z')] = sensor_positions[i, 2]
+                    data.loc[idx[i, :], ("position", 'x')] = sensor_positions[i, 0]
+                    data.loc[idx[i, :], ("position", 'y')] = sensor_positions[i, 1]
+                    data.loc[idx[i, :], ("position", 'z')] = sensor_positions[i, 2]
 
                 data = data.apply(pd.to_numeric)
                 print("Done")
