@@ -65,7 +65,7 @@ def read_data(folder, files, position_labels, name = "DataAvg.txt"):
     #df = pd.DataFrame(columns=pd.)
     with mp.Pool(processes=mp.cpu_count()) as pool:
         #data = pool.imap_unordered(partial(get_stats_from_file, folder), files)
-        data = pool.imap_unordered(partial(get_stats_from_file, folder), files), total=len(files)
+        data = pool.imap_unordered(partial(get_stats_from_file, folder), files)
         df = pd.concat(data)
 
     #df = pd.DataFrame(columns=pd.MultiIndex.from_product([["position", "B"], ["x", "y", "z"]], names=["value", "axis"]))
