@@ -21,7 +21,7 @@ num_measurements = 5
 
 bg_measurement = record_magnetic_field_measurements(num_measurements)
 
-background_value = np.array([-0.03001591, -0.04463215, -0.07229159])
+background_value = np.array([-0.0111, -0.0102, -0.0450])
 
 print(f"{background_value}")
 input("Press enter when magnet is in position")
