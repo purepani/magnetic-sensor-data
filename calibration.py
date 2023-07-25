@@ -32,7 +32,7 @@ def getNumSamples(lims, step):
     return int(np.round((lims[1]-lims[0])/step)) + 1
 
 
-def move_printer(printer, x, y, z):
+def move_printer(printer,  x, y, z):
     command = f"G01 X{x} Y{y} Z{z}"
     print(command)
     printer.send(command)
