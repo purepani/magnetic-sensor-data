@@ -76,6 +76,8 @@ def record_measurements(port, baudrate):
         for z in range(int(z_min), int(z_max) + 1, int(z_step)):
             for y in range(int(y_min), int(y_max) + 1, int(y_step)):
                 for x in range(int(x_min), int(x_max) + 1, int(x_step)):
+                    current_x, current_y, current_z = printer.get_current_position()
+					
                     # Move the printer head to the specified coordinates
                     printer.send("G1 X{:.2f}".format(x))
                     printer.send("G1 Y{:.2f}".format(y))
@@ -83,11 +85,15 @@ def record_measurements(port, baudrate):
                     print(f"Printer moving to ({x}, {y}, {z})")
 
                     # Wait for the move to complete (you may adjust the duration based on your printer's speed)
-                    time.sleep(1)
+                    time.sleep(5)
+                    
+                    # Wait for additional sleep time if the printer moved in Y or Z direction
+                    if abs(printer.get_current_position()[1] - current_y) > 0.1:
+                        time.sleep(5)
+                       
+                    if abs(printer.get_current_position()[2] - current_z) > 0.1:
+                        time.sleep(5)
 
-                    # Wait for the printer to stop moving before continuing
-                    while not printer.is_ready():
-                        time.sleep(1)
 
                     for i in range(100):
                         field1 = sen1.get_magnetometer()
@@ -102,6 +108,7 @@ def record_measurements(port, baudrate):
 
                         measurements_sensor1.extend([(x, y, z, magnetic_field_x_sensor1, magnetic_field_y_sensor1, magnetic_field_z_sensor1)])
                         measurements_sensor2.extend([(x, y, z, magnetic_field_x_sensor2, magnetic_field_y_sensor2, magnetic_field_z_sensor2)])
+                    print("Measurements completed at this location!")
 
         print("Printing and measurements completed!")
 
@@ -180,7 +187,7 @@ def record_measurements(port, baudrate):
         avg_magnetic_fields_sensor1.to_csv(avg_measurements_file_sensor1, index=False)
         avg_magnetic_fields_sensor2.to_csv(avg_measurements_file_sensor2, index=False)
 
-        printer.send(f"G0 X{0} Y{0} Z{0}")
+        printer.send(f"G0 X{x_max/2} Y{y_max/2} Z{z_min}")
         
         print("\nMeasurement data and average measurements saved to the folder: '{}'".format(user_folder))
 
