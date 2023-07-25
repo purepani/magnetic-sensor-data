@@ -49,6 +49,22 @@ def record_measurements(port, baudrate):
             z_max = float(input("Enter the maximum Z-coordinate (mm): "))
             z_step = float(input("Enter the step size for Z-coordinate (mm): "))
             
+            # Correct negative minimum values and adjust the maximum values accordingly
+            if x_min < 0:
+                x_max += abs(x_min)
+                printer.send(f"G92 X{abs(x_min)}")
+                x_min = 0
+
+            if y_min < 0:
+                y_max += abs(y_min)
+                printer.send(f"G92 Y{abs(y_min)}")
+                y_min = 0
+
+            if z_min < 0:
+                z_max += abs(z_min)
+                printer.send(f"G92 Z{abs(z_min)}")
+                z_min = 0
+            
         except ValueError:
             print("Invalid input. Please enter numeric values for coordinates and step size.")
             return
@@ -64,13 +80,14 @@ def record_measurements(port, baudrate):
                     printer.send("G1 X{:.2f}".format(x))
                     printer.send("G1 Y{:.2f}".format(y))
                     printer.send("G1 Z{:.2f}".format(z))
+                    print(f"Printer moving to ({x}, {y}, {z})")
 
                     # Wait for the move to complete (you may adjust the duration based on your printer's speed)
-                    time.sleep(5)
+                    time.sleep(1)
 
-                    # Check if the movement is complete
-                    while printer.printing:
-                        time.sleep(0.5)
+                    # Wait for the printer to stop moving before continuing
+                    while not printer.is_ready():
+                        time.sleep(1)
 
                     for i in range(100):
                         field1 = sen1.get_magnetometer()
