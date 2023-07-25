@@ -3,10 +3,22 @@ import time
 import pandas as pd
 from printrun.printcore import printcore
 from Sensors import PIMSensor
+from git import Repo
 
 def create_directory(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+def git_push(repo_path, branch_name):
+    try:
+        repo = Repo(repo_path)
+        repo.git.add(all=True)
+        repo.index.commit("Add measurement data and average measurements")
+        origin = repo.remote(name='origin')
+        origin.push(refspec=branch_name)
+
+    except Exception as e:
+        print("Error during Git push: ", e)
 
 def record_measurements(port, baudrate):
     try:
@@ -17,6 +29,11 @@ def record_measurements(port, baudrate):
         sen1 = PIMSensor(address=0x1e, i2c_dev=1)
         sen2 = PIMSensor(address=0x1d, i2c_dev=1)
         
+        # Prompt the user to input the folder name
+        user_folder = input("Enter the folder name to save data: ")
+        data_directory = os.path.join(os.getcwd(), user_folder)
+        create_directory(data_directory)
+                                
         print("Connected to the 3D printer. Sensor 1 = 0x1d, i2c 1. Sensor 2 = 0x1e, i2c 5")
 
         try:
@@ -31,20 +48,11 @@ def record_measurements(port, baudrate):
             z_min = float(input("Enter the minimum Z-coordinate (mm): "))
             z_max = float(input("Enter the maximum Z-coordinate (mm): "))
             z_step = float(input("Enter the step size for Z-coordinate (mm): "))
-
-            # Input background magnetic field values for Sensor 1 and Sensor 2
-            bg_magnetic_field_sensor1_x = float(input("Enter the background magnetic field for Sensor 1 (X-component): "))
-            bg_magnetic_field_sensor1_y = float(input("Enter the background magnetic field for Sensor 1 (Y-component): "))
-            bg_magnetic_field_sensor1_z = float(input("Enter the background magnetic field for Sensor 1 (Z-component): "))
-
-            bg_magnetic_field_sensor2_x = float(input("Enter the background magnetic field for Sensor 2 (X-component): "))
-            bg_magnetic_field_sensor2_y = float(input("Enter the background magnetic field for Sensor 2 (Y-component): "))
-            bg_magnetic_field_sensor2_z = float(input("Enter the background magnetic field for Sensor 2 (Z-component): "))
-
+            
         except ValueError:
-            print("Invalid input. Please enter numeric values for coordinates, step size, and background magnetic field.")
+            print("Invalid input. Please enter numeric values for coordinates and step size.")
             return
-
+                
         # Lists to store the magnetic field measurements from Sensor 1 and Sensor 2
         measurements_sensor1 = []
         measurements_sensor2 = []
@@ -87,6 +95,44 @@ def record_measurements(port, baudrate):
             printer.disconnect()
             print("Disconnected from the 3D printer.")
 
+        printer.send(f"G0 X{0} Y{0} Z{120}")
+        measurements_bg1 = []
+        measurements_bg2 = []
+        
+        for i in range(100):
+                        field1 = sen1.get_magnetometer()
+                        magnetic_field_x_sensor1 = field1[0]
+                        magnetic_field_y_sensor1 = field1[1]
+                        magnetic_field_z_sensor1 = field1[2]
+
+                        field2 = sen2.get_magnetometer()
+                        magnetic_field_x_sensor2 = field2[0]
+                        magnetic_field_y_sensor2 = field2[1]
+                        magnetic_field_z_sensor2 = field2[2]
+
+                        measurements_bg1.extend([(magnetic_field_x_sensor1, magnetic_field_y_sensor1, magnetic_field_z_sensor1)])
+                        measurements_bg2.extend([(magnetic_field_x_sensor2, magnetic_field_y_sensor2, magnetic_field_z_sensor2)])
+                        
+        # Convert the measurements data lists to pandas DataFrames for Sensor 1 and Sensor 2
+        columns = ['MagneticField_X', 'MagneticField_Y', 'MagneticField_Z']
+        df_bg1 = pd.DataFrame(measurements_bg1, columns=columns)
+        df_bg2 = pd.DataFrame(measurements_bg2, columns=columns)
+
+        # Calculate the average magnetic field measurements for Sensor 1 and Sensor 2
+        bg1 = df_bg1.mean()
+        bg2 = df_bg2.mean()
+        
+        # Input background magnetic field values for Sensor 1 and Sensor 2
+        bg_magnetic_field_sensor1_x = bg1[0]
+        bg_magnetic_field_sensor1_y = bg1[1]
+        bg_magnetic_field_sensor1_z = bg1[2]
+        bg_magnetic_field_sensor2_x = bg2[0]
+        bg_magnetic_field_sensor2_y = bg2[1]
+        bg_magnetic_field_sensor2_z = bg2[2]
+        
+        print("The background field for sensor 1 is " + str(bg1))
+        print("The background field for sensor 2 is " + str(bg2))
+        
         # Convert the measurements data lists to pandas DataFrames for Sensor 1 and Sensor 2
         columns = ['X', 'Y', 'Z', 'MagneticField_X', 'MagneticField_Y', 'MagneticField_Z']
         df_sensor1 = pd.DataFrame(measurements_sensor1, columns=columns)
@@ -105,14 +151,6 @@ def record_measurements(port, baudrate):
         avg_magnetic_fields_sensor2['MagneticField_Y'] -= bg_magnetic_field_sensor2_y
         avg_magnetic_fields_sensor2['MagneticField_Z'] -= bg_magnetic_field_sensor2_z
 
-        # Get the current working directory
-        current_directory = os.getcwd()
-
-        # Create a new directory with the user's specified name
-        user_folder = input("Enter the folder name to save data: ")
-        data_directory = os.path.join(current_directory, user_folder)
-        create_directory(data_directory)
-
         # Save the measurements and average as CSV files for Sensor 1 and Sensor 2 in the user-named folder
         measurements_file_sensor1 = os.path.join(data_directory, 'measurements_sensor1.csv')
         measurements_file_sensor2 = os.path.join(data_directory, 'measurements_sensor2.csv')
@@ -125,8 +163,13 @@ def record_measurements(port, baudrate):
         avg_magnetic_fields_sensor1.to_csv(avg_measurements_file_sensor1, index=False)
         avg_magnetic_fields_sensor2.to_csv(avg_measurements_file_sensor2, index=False)
 
+        printer.send(f"G0 X{0} Y{0} Z{0}")
+        
         print("\nMeasurement data and average measurements saved to the folder: '{}'".format(user_folder))
 
 if __name__ == "__main__":
     # Replace '/dev/ser/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX1017X003XC14071-if00' with your actual serial port and set the correct baudrate
     record_measurements('/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX1017X003XC14071-if00', 115200)
+    
+    # Push to the Git repository
+    git_push("/home/raspberrypi/Documents/magnetic-sensor-data", "main")
