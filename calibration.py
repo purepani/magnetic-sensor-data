@@ -48,7 +48,7 @@ sensor = Sensor(0x1e)
 sensors = [Sensor(0x1d, i2c_dev=1), Sensor(0x1e, i2c_dev=5), Sensor(0x1e, i2c_dev=1), Sensor(0x1d, i2c_dev=5)]
 sensor_positions = np.array([[0., 0., 0.], [35., 0., 0.], [0., 35., 0.], [35., 35., 0.]])
 
-printer = printcore("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", 115200)
+printer = printcore("/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX1017X003XC14071-if00", 115200)
 
 
 print("Waiting for Printer Connection")

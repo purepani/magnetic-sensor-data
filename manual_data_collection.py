@@ -15,13 +15,13 @@ def calculate_average(measurements):
     return np.mean(measurements, axis=0)
 
 
-sensor = Sensor(address = 0x1d, i2c_dev=1)
+sensor = Sensor(address = 0x1e, i2c_dev=1)
 
-num_measurements = 5
+num_measurements = 100
 
 bg_measurement = record_magnetic_field_measurements(num_measurements)
 
-background_value = np.array([-0.0111, -0.0102, -0.0450])
+background_value = calculate_average(bg_measurement)
 
 print(f"{background_value}")
 input("Press enter when magnet is in position")
@@ -57,7 +57,7 @@ while True:
 	print(df_averages)
 
 	repeat = input("\nDo you want to repeat the recording? (y/n): ").lower()
-	if repeat != "y":
+	if repeat == "n":
 		break
 
     # Save averages to CSV files
