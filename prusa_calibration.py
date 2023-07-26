@@ -76,7 +76,6 @@ def record_measurements(port, baudrate):
         for z in range(int(z_min), int(z_max) + 1, int(z_step)):
             for y in range(int(y_min), int(y_max) + 1, int(y_step)):
                 for x in range(int(x_min), int(x_max) + 1, int(x_step)):
-                    current_x, current_y, current_z = printer.get_current_position()
 					
                     # Move the printer head to the specified coordinates
                     printer.send("G1 X{:.2f}".format(x))
@@ -87,14 +86,9 @@ def record_measurements(port, baudrate):
                     # Wait for the move to complete (you may adjust the duration based on your printer's speed)
                     time.sleep(5)
                     
-                    # Wait for additional sleep time if the printer moved in Y or Z direction
-                    if abs(printer.get_current_position()[1] - current_y) > 0.1:
-                        time.sleep(5)
-                       
-                    if abs(printer.get_current_position()[2] - current_z) > 0.1:
-                        time.sleep(5)
-
-
+                    if x == x_min:
+                        time.sleep(15)                 
+                    
                     for i in range(100):
                         field1 = sen1.get_magnetometer()
                         magnetic_field_x_sensor1 = field1[0]
