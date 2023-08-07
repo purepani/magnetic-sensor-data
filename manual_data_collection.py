@@ -30,10 +30,15 @@ if not os.path.exists(folder_name):
 repo = Repo(os.getcwd())  # Use the current working directory as the repository path
 
 # Create instances for four sensors
+#magnet started from (-2,2) and moved to (2,-2) in (x,y)
 sensor1 = Sensor(address=0x1d, i2c_dev=1)
+#sensor1 is the second quadrant, multiply b_x and b_y by negative 1
 sensor2 = Sensor(address=0x1d, i2c_dev=5)
+#sensor2 is in the first quadrant
 sensor3 = Sensor(address=0x1e, i2c_dev=1)
+#sensor3 is in the third quadrant, multiply b_x and b_y by negative 1
 sensor4 = Sensor(address=0x1e, i2c_dev=5)
+#sensor4 is in the fourth quadrant
 
 sensors = [sensor1, sensor2, sensor3, sensor4]
 
