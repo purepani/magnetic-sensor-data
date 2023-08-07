@@ -9,7 +9,7 @@ import os
 import sys
 import signal
 import einops as eo
-
+import tqdm
 
 from Sensors import PIMSensor as Sensor
 
@@ -32,7 +32,7 @@ def getNumSamples(lims, step):
     return int(np.round((lims[1]-lims[0])/step)) + 1
 
 
-def move_printer(printer, x, y, z):
+def move_printer(printer,  x, y, z):
     command = f"G01 X{x} Y{y} Z{z}"
     print(command)
     printer.send(command)
@@ -46,9 +46,9 @@ def git_push(repo, message, foldername):
 
 sensor = Sensor(0x1e)
 sensors = [Sensor(0x1d, i2c_dev=1), Sensor(0x1e, i2c_dev=5), Sensor(0x1e, i2c_dev=1), Sensor(0x1d, i2c_dev=5)]
-sensor_positions = np.array([[0, 0, 0], [35, 0, 0], [0, 35, 0], [35, 35, 0]])
+sensor_positions = np.array([[0., 0., 0.], [35., 0., 0.], [0., 35., 0.], [35., 35., 0.]])
 
-printer = printcore("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", 115200)
+printer = printcore("/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX1017X003XC14071-if00", 115200)
 
 
 print("Waiting for Printer Connection")
@@ -269,7 +269,7 @@ try:
                     data.loc[idx[i, :] , ("position", 'x')] = sensor_positions[i, 0]
                     data.loc[idx[i, :] , ("position", 'y')] = sensor_positions[i, 1]
                     data.loc[idx[i, :] , ("position", 'z')] = sensor_positions[i, 2]
-
+                data = data.apply(pd.to_numeric)
                 print("Done")
                 data.to_csv(f"{folder_name}/{file_name}")
                 yprev  = y

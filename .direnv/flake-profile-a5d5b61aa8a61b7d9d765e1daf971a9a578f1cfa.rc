@@ -28,7 +28,7 @@ dontAddDisableDepTrack='1'
 export dontAddDisableDepTrack
 name='devenv-shell-env'
 export name
-out='/home/nixos/Projects/MagneticSensorTracking/outputs/out'
+out='/home/satwik/Documents/MagneticSensorTracking/Experiments/data/outputs/out'
 export out
 outputs='out'
 shellHook='# Remove all the unnecessary noise that is set by the build env
@@ -62,15 +62,15 @@ export C_INCLUDE_PATH="$DEVENV_PROFILE/include:${C_INCLUDE_PATH-}"
 export XDG_DATA_DIRS="$DEVENV_PROFILE/share:${XDG_DATA_DIRS-}"
 export XDG_CONFIG_DIRS="$DEVENV_PROFILE/etc/xdg:${XDG_CONFIG_DIRS-}"
 
-export DEVENV_DOTFILE='\''/home/nixos/Projects/MagneticSensorTracking/.devenv'\''
+export DEVENV_DOTFILE='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data/.devenv'\''
 export DEVENV_PROFILE='\''/nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile'\''
-export DEVENV_ROOT='\''/home/nixos/Projects/MagneticSensorTracking'\''
-export DEVENV_STATE='\''/home/nixos/Projects/MagneticSensorTracking/.devenv/state'\''
+export DEVENV_ROOT='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data'\''
+export DEVENV_STATE='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data/.devenv/state'\''
 export PYTHONPATH='\''/nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile/lib/python3.10/site-packages'\''
 
-source /nix/store/flgyh92gk789wiala8c3d8ll3q1q4lxm-init-venv.sh
+source /nix/store/mglvwkjf9ah1b5bfkm8ws8937rcm44ys-init-venv.sh
 
-source /nix/store/f0nyhjy53djw4gbj27dn97hywfn9c90b-init-poetry.sh
+source /nix/store/6fw4si8lv3cfkxn5gx112isyas29rfnv-init-poetry.sh
 
 export PS1="\[\e[0;34m\](devenv)\[\e[0m\] ${PS1-}"
 
@@ -107,8 +107,8 @@ runHook ()
     eval "$shellHook";
     unset runHook
 }
-PATH="$PATH:$nix_saved_PATH"
-XDG_DATA_DIRS="$XDG_DATA_DIRS:$nix_saved_XDG_DATA_DIRS"
+PATH="$PATH${nix_saved_PATH:+:$nix_saved_PATH}"
+XDG_DATA_DIRS="$XDG_DATA_DIRS${nix_saved_XDG_DATA_DIRS:+:$nix_saved_XDG_DATA_DIRS}"
 export NIX_BUILD_TOP="$(mktemp -d -t nix-shell.XXXXXX)"
 export TMP="$NIX_BUILD_TOP"
 export TMPDIR="$NIX_BUILD_TOP"
