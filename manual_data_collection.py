@@ -1,9 +1,11 @@
+import os
 import pandas as pd
 import numpy as np
+from git import Repo
 
 from Sensors import PIMSensor as Sensor
 
-def record_magnetic_field_measurements(num_measurements=5):
+def record_magnetic_field_measurements(sensor, num_measurements=5):
     measurements = np.zeros((num_measurements, 3))
 
     for i in range(num_measurements):
@@ -14,58 +16,81 @@ def record_magnetic_field_measurements(num_measurements=5):
 def calculate_average(measurements):
     return np.mean(measurements, axis=0)
 
+def commit_and_push(repo, folder_name):
+    repo.git.add(A=True)
+    repo.index.commit(f"Add data from {folder_name}")
+    origin = repo.remote()
+    origin.push()
 
-sensor = Sensor(address = 0x1e, i2c_dev=1)
+folder_name = input("Enter a folder name to save the data: ")
+
+if not os.path.exists(folder_name):
+    os.mkdir(folder_name)
+
+repo = Repo(os.getcwd())  # Use the current working directory as the repository path
+
+# Create instances for four sensors
+sensor1 = Sensor(address=0x1d, i2c_dev=1)
+sensor2 = Sensor(address=0x1d, i2c_dev=5)
+sensor3 = Sensor(address=0x1e, i2c_dev=1)
+sensor4 = Sensor(address=0x1e, i2c_dev=5)
+
+sensors = [sensor1, sensor2, sensor3, sensor4]
 
 num_measurements = 100
 
-bg_measurement = record_magnetic_field_measurements(num_measurements)
+bg_measurements = [record_magnetic_field_measurements(sensor, num_measurements) for sensor in sensors]
+background_values = [calculate_average(bg_measurement) for bg_measurement in bg_measurements]
 
-background_value = calculate_average(bg_measurement)
+print("Background Values:")
+for i, bg_value in enumerate(background_values):
+    print(f"Sensor {i + 1}: {bg_value}")
 
-print(f"{background_value}")
-input("Press enter when magnet is in position")
+input("Press enter when magnets are in position")
 
-measurements_list = []
-averages_list = []
+measurements_lists = [[] for _ in range(len(sensors))]
+averages_lists = [[] for _ in range(len(sensors))]
 
 while True:
-	magnetic_field_measurements = record_magnetic_field_measurements(num_measurements)
-	average_magnetic_field = calculate_average(magnetic_field_measurements)
+    for i, sensor in enumerate(sensors):
+        magnetic_field_measurements = record_magnetic_field_measurements(sensor, num_measurements)
+        average_magnetic_field = calculate_average(magnetic_field_measurements)
 
-	# Subtract the background value from each average
-	average_magnetic_field -= background_value
+        # Subtract the background value from each average
+        average_magnetic_field -= background_values[i]
 
-	measurements_list.append(magnetic_field_measurements)
-	averages_list.append(average_magnetic_field)
+        measurements_lists[i].append(magnetic_field_measurements)
+        averages_lists[i].append(average_magnetic_field)
 
-	data_measurements = {
-		"Measurement (x, y, z)": [meas.tolist() for meas in measurements_list]
-	}
+    for i, sensor in enumerate(sensors):
+        data_measurements = {
+            f"Sensor {i + 1} Measurement (x, y, z)": [meas.tolist() for meas in measurements_lists[i]]
+        }
 
-	data_averages = {
-		"Average (x, y, z)": [avg.tolist() for avg in averages_list]
-	}
+        data_averages = {
+            f"Sensor {i + 1} Average (x, y, z)": [avg.tolist() for avg in averages_lists[i]]
+        }
 
-	df_measurements = pd.DataFrame(data_measurements)
-	df_averages = pd.DataFrame(data_averages)
+        df_measurements = pd.DataFrame(data_measurements)
+        df_averages = pd.DataFrame(data_averages)
 
-	print("\nRecorded Measurements:\n")
-	print(df_measurements)
+        measurements_output_file = os.path.join(folder_name, f"sensor_{i + 1}_measurements.csv")
+        averages_output_file = os.path.join(folder_name, f"sensor_{i + 1}_averages.csv")
 
-	print("\nComputed Averages:\n")
-	print(df_averages)
+        df_measurements.to_csv(measurements_output_file, index=False)
+        df_averages.to_csv(averages_output_file, index=False)
 
-	repeat = input("\nDo you want to repeat the recording? (y/n): ").lower()
-	if repeat == "n":
-		break
+    print("\nRecorded Measurements:\n")
+    print(df_measurements)
 
-    # Save averages to CSV files
-output_measurements_file = input("Enter the measurements output file name (e.g., recorded_measurements.csv): ")
-output_averages_file = input("Enter the averages output file name (e.g., computed_averages.csv): ")
+    print("\nComputed Averages:\n")
+    print(df_averages)
 
-df_measurements.to_csv(output_measurements_file, index=False)
-df_averages.to_csv(output_averages_file, index=False)
+    repeat = input("\nDo you want to repeat the recording? (y/n): ").lower()
+    if repeat == "n":
+        break
 
-print(f"\nRecorded measurements saved to '{output_measurements_file}'.")
-print(f"Computed averages saved to '{output_averages_file}'.")
+print(f"Data for each sensor saved to '{folder_name}' folder.")
+
+# Commit and push changes to the Git repository
+commit_and_push(repo, folder_name)
