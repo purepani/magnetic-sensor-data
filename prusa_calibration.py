@@ -2,7 +2,7 @@ import os
 import time
 import pandas as pd
 from printrun.printcore import printcore
-from Sensors import PIMSensor
+from Sensors import MLXSensor
 from git import Repo
 
 def create_directory(directory):
@@ -26,8 +26,11 @@ def record_measurements(port, baudrate):
         printer.send(f"G91")
         #printer.send(f"G92 X{50} Y{50} Z{50}")
         
-        sen1 = PIMSensor(address=0x1e, i2c_dev=1)
-        sen2 = PIMSensor(address=0x1d, i2c_dev=1)
+        sen1 = MLXSensor(address=0x10)
+        sen2 = MLXSensor(address=0x11)
+        sen3 = MLXSensor(address=0x12)  # Adding sensor 3
+        sen4 = MLXSensor(address=0x13)  # Adding sensor 4
+
         
         # Prompt the user to input the folder name
         user_folder = input("Enter the folder name to save data: ")
@@ -72,6 +75,8 @@ def record_measurements(port, baudrate):
         # Lists to store the magnetic field measurements from Sensor 1 and Sensor 2
         measurements_sensor1 = []
         measurements_sensor2 = []
+        measurements_sensor3 = []
+        measurements_sensor4 = []
 
         for z in range(int(z_min), int(z_max) + 1, int(z_step)):
             for y in range(int(y_min), int(y_max) + 1, int(y_step)):
@@ -99,9 +104,21 @@ def record_measurements(port, baudrate):
                         magnetic_field_x_sensor2 = field2[0]
                         magnetic_field_y_sensor2 = field2[1]
                         magnetic_field_z_sensor2 = field2[2]
+                        
+                        field3 = sen3.get_magnetometer()
+                        magnetic_field_x_sensor3 = field1[0]
+                        magnetic_field_y_sensor3 = field1[1]
+                        magnetic_field_z_sensor3 = field1[2]
+
+                        field4 = sen4.get_magnetometer()
+                        magnetic_field_x_sensor4 = field2[0]
+                        magnetic_field_y_sensor4 = field2[1]
+                        magnetic_field_z_sensor4 = field2[2]
 
                         measurements_sensor1.extend([(x, y, z, magnetic_field_x_sensor1, magnetic_field_y_sensor1, magnetic_field_z_sensor1)])
                         measurements_sensor2.extend([(x, y, z, magnetic_field_x_sensor2, magnetic_field_y_sensor2, magnetic_field_z_sensor2)])
+                        measurements_sensor3.extend([(x, y, z, magnetic_field_x_sensor3, magnetic_field_y_sensor3, magnetic_field_z_sensor3)])
+                        measurements_sensor4.extend([(x, y, z, magnetic_field_x_sensor4, magnetic_field_y_sensor4, magnetic_field_z_sensor4)])
                     print("Measurements completed at this location!")
 
         print("Printing and measurements completed!")
@@ -116,6 +133,8 @@ def record_measurements(port, baudrate):
         printer.send(f"G0 X{0} Y{0} Z{120}")
         measurements_bg1 = []
         measurements_bg2 = []
+        measurements_bg3 = []
+        measurements_bg4 = []
         
         for i in range(100):
                         field1 = sen1.get_magnetometer()
@@ -127,18 +146,34 @@ def record_measurements(port, baudrate):
                         magnetic_field_x_sensor2 = field2[0]
                         magnetic_field_y_sensor2 = field2[1]
                         magnetic_field_z_sensor2 = field2[2]
+                        
+                        field3 = sen3.get_magnetometer()
+                        magnetic_field_x_sensor3 = field1[0]
+                        magnetic_field_y_sensor3 = field1[1]
+                        magnetic_field_z_sensor3 = field1[2]
+
+                        field4 = sen4.get_magnetometer()
+                        magnetic_field_x_sensor4 = field2[0]
+                        magnetic_field_y_sensor4 = field2[1]
+                        magnetic_field_z_sensor4 = field2[2]
 
                         measurements_bg1.extend([(magnetic_field_x_sensor1, magnetic_field_y_sensor1, magnetic_field_z_sensor1)])
                         measurements_bg2.extend([(magnetic_field_x_sensor2, magnetic_field_y_sensor2, magnetic_field_z_sensor2)])
-                        
+                        measurements_bg3.extend([(magnetic_field_x_sensor3, magnetic_field_y_sensor3, magnetic_field_z_sensor3)])
+                        measurements_bg4.extend([(magnetic_field_x_sensor4, magnetic_field_y_sensor4, magnetic_field_z_sensor4)])
+
         # Convert the measurements data lists to pandas DataFrames for Sensor 1 and Sensor 2
         columns = ['MagneticField_X', 'MagneticField_Y', 'MagneticField_Z']
         df_bg1 = pd.DataFrame(measurements_bg1, columns=columns)
         df_bg2 = pd.DataFrame(measurements_bg2, columns=columns)
+        df_bg3 = pd.DataFrame(measurements_bg3, columns=columns)
+        df_bg4 = pd.DataFrame(measurements_bg4, columns=columns)
 
         # Calculate the average magnetic field measurements for Sensor 1 and Sensor 2
         bg1 = df_bg1.mean()
         bg2 = df_bg2.mean()
+        bg3 = df_bg3.mean()
+        bg4 = df_bg4.mean()
         
         # Input background magnetic field values for Sensor 1 and Sensor 2
         bg_magnetic_field_sensor1_x = bg1[0]
@@ -147,18 +182,30 @@ def record_measurements(port, baudrate):
         bg_magnetic_field_sensor2_x = bg2[0]
         bg_magnetic_field_sensor2_y = bg2[1]
         bg_magnetic_field_sensor2_z = bg2[2]
+        bg_magnetic_field_sensor3_x = bg3[0]
+        bg_magnetic_field_sensor3_y = bg3[1]
+        bg_magnetic_field_sensor3_z = bg3[2]
+        bg_magnetic_field_sensor4_x = bg4[0]
+        bg_magnetic_field_sensor4_y = bg4[1]
+        bg_magnetic_field_sensor4_z = bg4[2]
         
         print("The background field for sensor 1 is " + str(bg1))
         print("The background field for sensor 2 is " + str(bg2))
+        print("The background field for sensor 3 is " + str(bg3))
+        print("The background field for sensor 4 is " + str(bg4))
         
         # Convert the measurements data lists to pandas DataFrames for Sensor 1 and Sensor 2
         columns = ['X', 'Y', 'Z', 'MagneticField_X', 'MagneticField_Y', 'MagneticField_Z']
         df_sensor1 = pd.DataFrame(measurements_sensor1, columns=columns)
         df_sensor2 = pd.DataFrame(measurements_sensor2, columns=columns)
+        df_sensor3 = pd.DataFrame(measurements_sensor3, columns=columns)
+        df_sensor4 = pd.DataFrame(measurements_sensor4, columns=columns)
 
         # Calculate the average magnetic field measurements for Sensor 1 and Sensor 2 at each location
         avg_magnetic_fields_sensor1 = df_sensor1.groupby(['X', 'Y', 'Z']).mean().reset_index()
         avg_magnetic_fields_sensor2 = df_sensor2.groupby(['X', 'Y', 'Z']).mean().reset_index()
+        avg_magnetic_fields_sensor3 = df_sensor3.groupby(['X', 'Y', 'Z']).mean().reset_index()
+        avg_magnetic_fields_sensor4 = df_sensor4.groupby(['X', 'Y', 'Z']).mean().reset_index()
 
         # Subtract the background magnetic field values for Sensor 1 and Sensor 2 from the average measurements
         avg_magnetic_fields_sensor1['MagneticField_X'] -= bg_magnetic_field_sensor1_x
@@ -168,18 +215,35 @@ def record_measurements(port, baudrate):
         avg_magnetic_fields_sensor2['MagneticField_X'] -= bg_magnetic_field_sensor2_x
         avg_magnetic_fields_sensor2['MagneticField_Y'] -= bg_magnetic_field_sensor2_y
         avg_magnetic_fields_sensor2['MagneticField_Z'] -= bg_magnetic_field_sensor2_z
+        
+        avg_magnetic_fields_sensor3['MagneticField_X'] -= bg_magnetic_field_sensor3_x  # New background subtraction for sen3
+        avg_magnetic_fields_sensor3['MagneticField_Y'] -= bg_magnetic_field_sensor3_y
+        avg_magnetic_fields_sensor3['MagneticField_Z'] -= bg_magnetic_field_sensor3_z
+
+        avg_magnetic_fields_sensor4['MagneticField_X'] -= bg_magnetic_field_sensor4_x  # New background subtraction for sen4
+        avg_magnetic_fields_sensor4['MagneticField_Y'] -= bg_magnetic_field_sensor4_y
+        avg_magnetic_fields_sensor4['MagneticField_Z'] -= bg_magnetic_field_sensor4_z
 
         # Save the measurements and average as CSV files for Sensor 1 and Sensor 2 in the user-named folder
         measurements_file_sensor1 = os.path.join(data_directory, 'measurements_sensor1.csv')
         measurements_file_sensor2 = os.path.join(data_directory, 'measurements_sensor2.csv')
         avg_measurements_file_sensor1 = os.path.join(data_directory, 'average_measurements_sensor1.csv')
         avg_measurements_file_sensor2 = os.path.join(data_directory, 'average_measurements_sensor2.csv')
+        
+        measurements_file_sensor3 = os.path.join(data_directory, 'measurements_sensor3.csv')
+        measurements_file_sensor4 = os.path.join(data_directory, 'measurements_sensor4.csv')
+        avg_measurements_file_sensor3 = os.path.join(data_directory, 'average_measurements_sensor3.csv')
+        avg_measurements_file_sensor4 = os.path.join(data_directory, 'average_measurements_sensor4.csv')
 
         df_sensor1.to_csv(measurements_file_sensor1, index=False)
         df_sensor2.to_csv(measurements_file_sensor2, index=False)
+        df_sensor3.to_csv(measurements_file_sensor3, index=False)
+        df_sensor4.to_csv(measurements_file_sensor4, index=False)
 
         avg_magnetic_fields_sensor1.to_csv(avg_measurements_file_sensor1, index=False)
         avg_magnetic_fields_sensor2.to_csv(avg_measurements_file_sensor2, index=False)
+        avg_magnetic_fields_sensor3.to_csv(avg_measurements_file_sensor3, index=False)
+        avg_magnetic_fields_sensor4.to_csv(avg_measurements_file_sensor4, index=False)
 
         printer.send(f"G0 X{x_max/2} Y{y_max/2} Z{z_min}")
         
