@@ -46,4 +46,5 @@ class MLXSensor:
         )
 
     def get_magnetometer(self):
-        x, y, z = tuple(map(lambda x: x / 1000, self.sensor.magnetic))
+        x, y, z = self.sensor.magnetic
+        return x/1000, y/1000, z/1000
