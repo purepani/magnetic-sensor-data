@@ -1,6 +1,9 @@
 import TLV
 import lsm303d
 import smbus
+import adafruit_mlx90393
+import board
+
 class TLVSensor:
     def __init__(self):
         self.sensor = TLV.TLV493D()
@@ -19,3 +22,12 @@ class PIMSensor:
     def get_magnetometer(self): #return tuple
         x, y, z = self.sensor.magnetometer()
         return x/10, y/10, z/10
+
+class MLXSensor:
+    def __init__(self, address, gain=adafruit_mlx90393.GAIN_1X, resolution=adafruit_mlx90393.RESOLUTION_16, filt=adafruit_mlx90393.FILTER_7, oversampling=adafruit_mlx90393.OSR_3):
+        i2c = board.I2C()
+        self.sensor=adafruit_mlx90393.MLX90393(i2c, gain=gain, resolution=resolution, filt=filt, oversampling=oversampling)
+    
+
+    def get_magnetometer(self):
+        x, y, z = self.sensor.magnetic

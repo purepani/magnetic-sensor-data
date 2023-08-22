@@ -261,7 +261,6 @@ try:
 
 
                 #row_data = eo.rearrange(row_data, "samples sensors dim -> dim (sensors samples)")
-                
                 for i in range(len(sensors)):
                     data.loc[idx[i, :] , ("Magnetometer", 'x')]=row_data[:, i, 0]
                     data.loc[idx[i, :], ("Magnetometer", 'y')]=row_data[:, i, 1]
@@ -297,7 +296,6 @@ try:
             git_push(repo, f"Added the {z} slice to the {folder_name} test", folder_name)
         except:
             print(f"Failed to push the {z} slice to the {folder_name} test")
-        
 
 except:
     move_printer(printer, "0", "0", "0")
