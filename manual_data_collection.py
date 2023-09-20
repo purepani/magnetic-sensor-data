@@ -42,7 +42,7 @@ sensor4 = Sensor(address=0x13)
 
 sensors = [sensor1, sensor2, sensor3, sensor4]
 
-num_measurements = 100
+num_measurements = 10
 
 bg_measurements = [record_magnetic_field_measurements(sensor, num_measurements) for sensor in sensors]
 background_values = [calculate_average(bg_measurement) for bg_measurement in bg_measurements]
