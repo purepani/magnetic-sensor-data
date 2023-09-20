@@ -99,3 +99,5 @@ print(f"Data for each sensor saved to '{folder_name}' folder.")
 
 # Commit and push changes to the Git repository
 commit_and_push(repo, folder_name)
+
+print("Data pusehd to git repository")
