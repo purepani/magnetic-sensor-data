@@ -28,8 +28,8 @@ class MLXSensor:
             address=address,
             gain=gain,
             resolution=resolution,
-            filt=2,
-            oversampling=2,
+            filt=3,
+            oversampling=oversampling,
         )
 
     def get_magnetometer(self):
