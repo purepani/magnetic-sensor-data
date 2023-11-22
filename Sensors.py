@@ -28,7 +28,7 @@ class MLXSensor:
             address=address,
             gain=gain,
             resolution=resolution,
-            filt=filt,
+            filt=3,
             oversampling=oversampling,
         )
 
