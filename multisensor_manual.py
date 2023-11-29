@@ -33,7 +33,20 @@ repo = Repo(os.getcwd())  # Use the current working directory as the repository 
 sensor_addresses = [0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b]
 
 # Create instances for each sensor using the list of addresses
-sensors = [Sensor(address=addr) for addr in sensor_addresses]
+sensors = []
+
+for addr in sensor_addresses:
+    while True:
+        try:
+            sensor = Sensor(address=addr)
+            # If the sensor is successfully created, break out of the loop
+            break
+        except Exception as e:
+            print(f"Error connecting to sensor at address {addr}: {e}")
+            print("Retrying...")
+            # You can add a delay here if needed, e.g., time.sleep(1)
+
+    sensors.append(sensor)
 
 num_measurements = 10
 
