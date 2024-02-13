@@ -1708,13 +1708,14 @@ files = [
 
 [[package]]
 name = "magpylib"
-version = "4.2.0"
+version = "4.5.1"
 description = "Free Python3 package to compute magnetic fields."
 category = "main"
 optional = false
-python-versions = "~=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "magpylib-4.2.0.tar.gz", hash = "sha256:4aace03a90099f3917cc7d8d033c61f7e9481caee52a4f5ba44651762dd6db45"},
+    {file = "magpylib-4.5.1-py3-none-any.whl", hash = "sha256:5e326169d37a575f24ece7fed0f3dcbeaa74550db864b15930f224e642907c67"},
+    {file = "magpylib-4.5.1.tar.gz", hash = "sha256:c2beff96a8411401572e7928f7ad6094e82b402f2db6332797b3f159b67f8f4f"},
 ]
 
 [package.dependencies]
@@ -1724,7 +1725,10 @@ plotly = ">=5.3"
 scipy = ">=1.7"
 
 [package.extras]
-dev = ["coverage", "ipygany", "jupyterlab (>=3.2)", "kaleido", "pandas", "pylint", "pytest", "pyvista", "sphinx (==4.4.0)"]
+binder = ["jupyterlab (>=3.2)", "jupyterlab-myst", "jupytext"]
+code-style = ["pre-commit"]
+docs = ["myst-nb", "numpy-stl", "pandas", "panel", "pyvista (==0.37)", "sphinx (==5.3)", "sphinx-book-theme", "sphinx-copybutton", "sphinx-design", "sphinx-favicon", "sphinx-gallery", "sphinx-thebe"]
+test = ["coverage", "imageio[tifffile]", "ipygany", "jupyterlab", "kaleido", "pandas", "pylint (>3.0)", "pytest (>=7.4)", "pyvista", "tox (>=4.11)"]
 
 [[package]]
 name = "markdown"

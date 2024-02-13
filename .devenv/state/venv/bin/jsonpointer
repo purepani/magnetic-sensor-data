@@ -1,4 +1,4 @@
-#!/home/nixos/Projects/MagneticSensorTracking/.devenv/state/venv/bin/python
+#!/home/satwik/projects/magnetic-sensor-data/.devenv/state/venv/bin/python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function

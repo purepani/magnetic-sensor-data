@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/nixos/Projects/MagneticSensorTracking/.devenv/state/venv"
+VIRTUAL_ENV="/home/satwik/projects/magnetic-sensor-data/.devenv/state/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

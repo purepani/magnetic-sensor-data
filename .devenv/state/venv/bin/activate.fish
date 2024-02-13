@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/nixos/Projects/MagneticSensorTracking/.devenv/state/venv"
+set -gx VIRTUAL_ENV "/home/satwik/projects/magnetic-sensor-data/.devenv/state/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
