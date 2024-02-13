@@ -1,0 +1,28 @@
+import pandas as pd
+
+folder = "MLX02072024_D32N52_test4"
+
+class InFile(object):
+def __init__(self, infile):
+    self.infile = open(infile)
+
+def __next__(self):
+    return self.next()
+
+def __iter__(self):
+    return self
+
+def read(self, *args, **kwargs):
+    return self.__next__()
+
+def next(self):
+    try:
+        line: str = self.infile.readline()
+        line = line.strip("\"[]\'") # do some fixing
+        return line
+    except:
+        self.infile.close()
+        raise StopIteration
+
+df = pd.read_csv(f"{folder}/sensor_10_averages.csv", sep=",");
+print(df)

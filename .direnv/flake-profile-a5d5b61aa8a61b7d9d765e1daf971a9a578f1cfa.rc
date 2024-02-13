@@ -28,7 +28,7 @@ dontAddDisableDepTrack='1'
 export dontAddDisableDepTrack
 name='devenv-shell-env'
 export name
-out='/home/satwik/Documents/MagneticSensorTracking/Experiments/data/outputs/out'
+out='/home/satwik/projects/magnetic-sensor-data/outputs/out'
 export out
 outputs='out'
 shellHook='# Remove all the unnecessary noise that is set by the build env
@@ -47,7 +47,7 @@ fi
 # https://github.com/numtide/devshell/issues/158
 PATH=${PATH#/path-not-set:}
 
-export DEVENV_PROFILE=/nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile
+export DEVENV_PROFILE=/nix/store/mjy8jv3jqgn7kwzkh4yi7v4w6753vwb5-devenv-profile
 
 # add installed packages to PATH
 export PATH="$DEVENV_PROFILE/bin:$PATH"
@@ -62,15 +62,16 @@ export C_INCLUDE_PATH="$DEVENV_PROFILE/include:${C_INCLUDE_PATH-}"
 export XDG_DATA_DIRS="$DEVENV_PROFILE/share:${XDG_DATA_DIRS-}"
 export XDG_CONFIG_DIRS="$DEVENV_PROFILE/etc/xdg:${XDG_CONFIG_DIRS-}"
 
-export DEVENV_DOTFILE='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data/.devenv'\''
-export DEVENV_PROFILE='\''/nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile'\''
-export DEVENV_ROOT='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data'\''
-export DEVENV_STATE='\''/home/satwik/Documents/MagneticSensorTracking/Experiments/data/.devenv/state'\''
-export PYTHONPATH='\''/nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile/lib/python3.10/site-packages'\''
+export DEVENV_DOTFILE='\''/home/satwik/projects/magnetic-sensor-data/.devenv'\''
+export DEVENV_PROFILE='\''/nix/store/mjy8jv3jqgn7kwzkh4yi7v4w6753vwb5-devenv-profile'\''
+export DEVENV_ROOT='\''/home/satwik/projects/magnetic-sensor-data'\''
+export DEVENV_STATE='\''/home/satwik/projects/magnetic-sensor-data/.devenv/state'\''
+export PYTHONPATH='\''/nix/store/mjy8jv3jqgn7kwzkh4yi7v4w6753vwb5-devenv-profile/lib/python3.10/site-packages'\''
+export QT_PLUGIN_PATH='\''/nix/store/6ymhc86bzm2s5mxqhf1n2c5dvpfg6sjm-qtbase-5.15.8-bin/lib/qt-5.15.8/plugins'\''
 
-source /nix/store/mglvwkjf9ah1b5bfkm8ws8937rcm44ys-init-venv.sh
+source /nix/store/xvgp7wjvyvyfiwzz0p3hi0n0b6mb9z9v-init-venv.sh
 
-source /nix/store/6fw4si8lv3cfkxn5gx112isyas29rfnv-init-poetry.sh
+source /nix/store/5jakbiclmcsmc76xbqblj60x2ss3zr5g-init-poetry.sh
 
 export PS1="\[\e[0;34m\](devenv)\[\e[0m\] ${PS1-}"
 
@@ -93,7 +94,7 @@ fi
 
 mkdir -p .devenv
 rm -f .devenv/profile
-ln -s /nix/store/f2rzx2h5kaly66fdyk1x982lpgrg0r99-devenv-profile .devenv/profile
+ln -s /nix/store/mjy8jv3jqgn7kwzkh4yi7v4w6753vwb5-devenv-profile .devenv/profile
 
 '
 export shellHook

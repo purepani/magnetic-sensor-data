@@ -20,10 +20,30 @@
     in {
       devShell = devenv.lib.mkShell {
         inherit inputs pkgs;
+
         modules = [
-          ({pkgs, ...}: {
-            packages = [pkgs.zlib pkgs.python3 pkgs.nodejs pkgs.libgccjit pkgs.xorg.libX11 pkgs.libGLU pkgs.libGL pkgs.ffmpeg pkgs.xorg.libXrender];
-            
+          ({pkgs, ...}: let
+            python' = pkgs.python3.override {
+              packageOverrides = self: super: {
+                matplotlib = super.matplotlib.override {enableQt = true;};
+              };
+            };
+            #matplotlib = pkgs.python3Packages.matplotlib.override {enableQt = true;};
+          in {
+            env.QT_PLUGIN_PATH = with pkgs.qt5; "${qtbase}/${qtbase.qtPluginPrefix}";
+            packages = [
+              pkgs.zlib
+              (python'.withPackages
+                (ps: [ps.matplotlib]))
+              pkgs.nodejs
+              pkgs.libgccjit
+              pkgs.xorg.libX11
+              pkgs.libGLU
+              pkgs.libGL
+              pkgs.ffmpeg
+              pkgs.xorg.libXrender
+            ];
+
             languages.python = {
               enable = true;
               venv.enable = true;
