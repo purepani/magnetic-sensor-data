@@ -38,7 +38,7 @@ sensors = []
 for addr in sensor_addresses:
     while True:
         try:
-            sensor = Sensor(address=addr)
+            sensor = Sensor(address=addr, gain=4)
             # If the sensor is successfully created, break out of the loop
             break
         except Exception as e:
