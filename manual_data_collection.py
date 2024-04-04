@@ -40,7 +40,24 @@ sensor3 = Sensor(address=0x12) #bottom left
 sensor4 = Sensor(address=0x13) #bottom right
 #sensor4 is in the fourth quadrant
 
-sensors = [sensor1, sensor2, sensor3, sensor4]
+# Define a list of sensor addresses
+sensor_addresses = [0x10, 0x11, 0x12, 0x13]
+
+# Create instances for each sensor using the list of addresses
+sensors = []
+
+for addr in sensor_addresses:
+    while True:
+        try:
+            sensor = Sensor(address=addr, gain=4)
+            # If the sensor is successfully created, break out of the loop
+            break
+        except Exception as e:
+            print(f"Error connecting to sensor at address {addr}: {e}")
+            print("Retrying...")
+            # You can add a delay here if needed, e.g., time.sleep(1)
+
+    sensors.append(sensor)
 
 num_measurements = 10
 
@@ -100,4 +117,4 @@ print(f"Data for each sensor saved to '{folder_name}' folder.")
 # Commit and push changes to the Git repository
 commit_and_push(repo, folder_name)
 
-print("Data pusehd to git repository")
+print("Data pushed to the git repository")
