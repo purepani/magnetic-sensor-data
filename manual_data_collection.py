@@ -61,12 +61,18 @@ for addr in sensor_addresses:
 
 num_measurements = 10
 
+bg_true = input("Do you want to measure the background? y/n: ")
+
 bg_measurements = [record_magnetic_field_measurements(sensor, num_measurements) for sensor in sensors]
 background_values = [calculate_average(bg_measurement) for bg_measurement in bg_measurements]
 
 print("Background Values:")
 for i, bg_value in enumerate(background_values):
     print(f"Sensor {i + 1}: {bg_value}")
+    
+if bg_true == 'n':
+    background_values = [0 for bg_measurement in bg_measurements]
+    print(background_values)
 
 input("Press enter when magnets are in position")
 
