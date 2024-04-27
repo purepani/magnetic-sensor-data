@@ -6,11 +6,11 @@ from git import Repo
 from Sensors import MLXSensor as Sensor
 
 def record_magnetic_field_measurements(sensor, num_measurements=10):
-    measurements = np.zeros((num_measurements, 3))
+    measurements = np.zeros((num_measurements, 4))
 
     for i in range(num_measurements):
         B = np.array(sensor.get_magnetometer())
-        measurements[i] = [B[0], B[1], B[2]]
+        measurements[i] = [B[0], B[1], B[2], B[3]]
     return measurements
 
 def calculate_average(measurements):
@@ -38,7 +38,7 @@ sensors = []
 for addr in sensor_addresses:
     while True:
         try:
-            sensor = Sensor(address=addr, gain=4)
+            sensor = Sensor(address=addr, gain=4, temperature_compensation = True)
             # If the sensor is successfully created, break out of the loop
             break
         except Exception as e:
