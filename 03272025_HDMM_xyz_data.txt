@@ -1,4 +1,4 @@
-Time,X,Y,Z,Displacement [mm]
+Time,X,Y,Z
 2025-03-26T15:53:08.676,        NaN,         NaN,         NaN
 2025-03-26T15:53:08.676,        NaN,         NaN,         NaN
 2025-03-26T15:53:08.764,        NaN,         NaN,         NaN
